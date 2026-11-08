@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스스로그 사용법</title>
+<meta name="description" content="스스로그 앱을 실제 화면으로 따라 하며 익혀요. 처음 시작, 찍기, 정리하기, 모아보기, 백업, 새 폰으로 옮기기">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+/* 앱·사이트와 같은 디자인 기본 틀(docs/design.md): zinc 회색 + 남색 하나, 폰 기본 글꼴.
+   한 줄 짜임: 좁은 한 단 · 장마다 [설명 글 → 실제 화면 → 단추] 재생기 + 그 아래 단계 글 */
+:root {
+  --page: #F4F4F5; --card: #FFFFFF; --muted: #F4F4F5; --line: #E4E4E7;
+  --text: #09090B; --sub: #52525B; --faint: #71717A;
+  --accent: #4F46E5; --on-accent: #FFFFFF; --tint: #EEF2FF;
+  --draft-bg: #FEF9C3; --draft-fg: #A16207;
+  --shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.10);
+  --screen-shadow: 0 10px 30px rgba(24,24,27,.14), 0 2px 6px rgba(24,24,27,.08);
+  /* 화면 위 효과: 캡처는 늘 밝은 화면이라 테마와 관계없이 같은 색 */
+  --caret: #3A8477; --app-accent: #4F46E5; --app-track: #E4E4E7; --app-muted: #71717A; --fx: #6366F1; --fx-soft: rgba(99,102,241,.24); --fx-ripple: rgba(99,102,241,.34); --fx-shade: rgba(9,9,11,.58);
+  --font: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #09090B; --card: #18181B; --muted: #27272A; --line: #27272A;
+    --text: #FAFAFA; --sub: #D4D4D8; --faint: #A1A1AA;
+    --accent: #818CF8; --on-accent: #1E1B4B; --tint: #1E1B4B;
+    --draft-bg: #422006; --draft-fg: #FDE047;
+    --shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    --screen-shadow: 0 10px 30px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #09090B; --card: #18181B; --muted: #27272A; --line: #27272A;
+  --text: #FAFAFA; --sub: #D4D4D8; --faint: #A1A1AA;
+  --accent: #818CF8; --on-accent: #1E1B4B; --tint: #1E1B4B;
+  --draft-bg: #422006; --draft-fg: #FDE047;
+  --shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  --screen-shadow: 0 10px 30px rgba(0,0,0,.5);
+  color-scheme: dark;
+}
+body { background: var(--page); color: var(--text); font: 16px/1.5 var(--font); word-break: keep-all; overflow-wrap: anywhere; }
+.page {
+  max-width: 560px; margin: 0 auto; box-sizing: border-box;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px;
+}
+[hidden] { display: none !important; }
+h1, h2, h3, p, ol, ul { margin: 0; }
+h1, h2 { text-wrap: balance; }
+.draft { align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: var(--draft-bg); color: var(--draft-fg); font-size: 12px; line-height: 18px; font-weight: 600; }
+.intro { display: flex; flex-direction: column; gap: 10px; }
+.intro h1 { font-size: 28px; line-height: 36px; font-weight: 700; }
+.intro p { color: var(--sub); }
+
+.toc { display: flex; flex-direction: column; border-radius: 12px; background: var(--card); box-shadow: var(--shadow); overflow: hidden; }
+.toc > * { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-top: 1px solid var(--line); font-size: 16px; text-decoration: none; color: var(--text); }
+.toc > *:first-child { border-top: 0; }
+.toc .soon { color: var(--faint); }
+.toc .soon small { margin-left: auto; font-size: 13px; }
+.toc a { font-weight: 600; color: var(--accent); }
+.toc a svg { margin-left: auto; }
+.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.chapter { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.chapter > header { display: flex; flex-direction: column; gap: 6px; }
+.chapter h2 { font-size: 22px; line-height: 30px; font-weight: 700; }
+.chapter > header p { color: var(--sub); }
+
+.player { display: flex; flex-direction: column; gap: 14px; padding: 16px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+.cap { display: flex; gap: 12px; align-items: flex-start; min-height: 74px; }
+.cap .num { flex: none; display: grid; place-items: center; width: 28px; height: 28px; margin-top: 1px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cap .more { flex: none; margin-top: 3px; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent); font-size: 12px; line-height: 18px; font-weight: 700; white-space: nowrap; }
+.cap .txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cap .main { font-size: 18px; line-height: 26px; font-weight: 600; text-wrap: balance; }
+.cap .sub { font-size: 14px; line-height: 20px; color: var(--sub); }
+
+.screen {
+  position: relative; align-self: center; overflow: hidden;
+  width: min(100%, 300px, calc((100vh - 270px) * 0.4932));
+  width: min(100%, 300px, calc((100svh - 270px) * 0.4932));
+  min-width: min(100%, 220px);
+  aspect-ratio: 720 / 1460; max-width: 100%;
+  border-radius: 24px; border: 1px solid var(--line); background: #FFFFFF; box-shadow: var(--screen-shadow);
+  isolation: isolate;
+}
+.zoom, .layer, .fx { position: absolute; inset: 0; }
+.zoom { overflow: hidden; }
+.layer { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dim { position: absolute; inset: 0; background: #000; opacity: 0; }
+.flash { position: absolute; inset: 0; background: #FFFFFF; opacity: 0; }
+.typing { clip-path: inset(0 100% 0 0); }
+.hold { position: absolute; left: 0; top: 0; opacity: 0; overflow: visible; pointer-events: none; }
+.hold .bg { fill: var(--fx-soft); }
+.hold .arc { fill: none; stroke: var(--fx); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.caret { position: absolute; width: 2px; background: var(--caret); opacity: 0; }
+.spot { position: absolute; opacity: 0; box-shadow: 0 0 0 9999px var(--fx-shade); outline: 3px solid var(--fx); outline-offset: 3px; pointer-events: none; }
+.ring { position: absolute; opacity: 0; border: 3px solid var(--fx); box-sizing: border-box; pointer-events: none; }
+.press { position: absolute; opacity: 0; background: var(--fx-soft); pointer-events: none; }
+.ripple { position: absolute; left: 0; top: 0; opacity: 0; border-radius: 999px; background: var(--fx-ripple); border: 2px solid var(--fx); box-sizing: border-box; pointer-events: none; }
+.spin { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; }
+.spin svg { display: block; width: 100%; height: 100%; animation: spin-turn 1.6s linear infinite; }
+.spin circle { fill: none; stroke: var(--app-accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1 200; stroke-dashoffset: 0; animation: spin-arc 1.4s ease-in-out infinite; }
+@keyframes spin-turn { to { transform: rotate(360deg); } }
+@keyframes spin-arc { 0% { stroke-dasharray: 1 200; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90 200; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90 200; stroke-dashoffset: -124; } }
+@media (prefers-reduced-motion: reduce) { .spin svg, .spin circle { animation: none; stroke-dasharray: 90 200; } }
+/* 복원 중 화면의 진행 막대·숫자: 캡처에서 지우고 페이지가 그려 차오르게 (CHAPTERS.move.bars) */
+.bar { position: absolute; left: 0; top: 0; opacity: 0; overflow: hidden; border-radius: 999px; background: var(--app-track); }
+.bar i { display: block; width: 0; height: 100%; border-radius: 999px; background: var(--app-accent); }
+.barcount { position: absolute; left: 0; top: 0; opacity: 0; transform: translate(-100%, -50%); color: var(--app-muted); font-family: var(--font); font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.finger { position: absolute; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); pointer-events: none; transform-origin: 39% 5%; }
+
+.controls { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.controls button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 44px; height: 44px; padding: 0 12px; box-sizing: border-box;
+  border: 0; border-radius: 12px; background: var(--muted); color: var(--text);
+  font: 600 15px/1 var(--font); cursor: pointer;
+}
+.controls button.primary { background: var(--accent); color: var(--on-accent); min-width: 56px; }
+.controls button:disabled { opacity: .4; cursor: default; }
+.controls button:focus-visible, .steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.controls .count { min-width: 52px; text-align: center; font-size: 14px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.controls .again[data-hot="1"] { background: var(--tint); color: var(--accent); }
+
+.steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.steps button {
+  width: 100%; display: flex; gap: 12px; align-items: flex-start; text-align: left;
+  padding: 10px 12px; border: 0; border-radius: 12px; background: transparent; color: var(--text);
+  font: inherit; cursor: pointer;
+}
+.steps button[aria-current="step"] { background: var(--tint); }
+.steps .n { flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin-top: 1px; border-radius: 999px; background: var(--muted); color: var(--sub); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.steps .dot { flex: none; width: 8px; height: 8px; margin: 9px 8px 0; border-radius: 999px; background: var(--faint); }
+.steps button[aria-current="step"] .n { background: var(--accent); color: var(--on-accent); }
+.steps button[aria-current="step"] .dot { background: var(--accent); }
+.steps .t { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.steps .t b { font-weight: 600; }
+.steps .t span { font-size: 14px; line-height: 20px; color: var(--sub); }
+.list h3 { margin: 14px 12px 6px; font-size: 14px; font-weight: 700; color: var(--faint); }
+
+/* 사이트 머리줄 (사이트 style.css의 .site-head·.brand와 같은 값, 폭은 이 페이지 본문 560에 맞춤) */
+body { margin: 0; }
+.site-head-inner {
+  max-width: 560px; margin: 0 auto; box-sizing: border-box; padding-top: 8px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--text); text-decoration: none; font-size: 17px; line-height: 24px; font-weight: 700; }
+.brand img { width: 28px; height: 28px; border-radius: 7px; }
+.brand:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="site-head-inner">
+    <a class="brand" href="/"><img src="/icon-192.png" alt="" width="28" height="28">스스로그</a>
+  </div>
+</header>
+
+<main class="page">
+  <header class="intro">
+    <h1>스스로그 사용법</h1>
+    <p>실제 앱 화면을 따라 하면서 익혀 보세요. 화면 아래 단추로 한 단계씩 넘기거나 멈출 수 있어요.</p>
+  </header>
+
+  <nav class="toc" aria-label="장 목록">
+    <a href="#start">처음 시작<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#capture">찍기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#organize">정리하기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#browse">모아보기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#backup">백업<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#move">새 폰으로 옮기기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+  </nav>
+
+  <section class="chapter" id="start" aria-labelledby="start-title">
+    <header>
+      <h2 id="start-title">처음 시작</h2>
+      <p>앱을 처음 켜면 입학한 해 하나만 골라요. 학년·학기는 앱이 알아서 붙여요.</p>
+    </header>
+    <div class="player" data-chapter="start"></div>
+    <div class="list"></div>
+  </section>
+
+  <section class="chapter" id="capture" aria-labelledby="capture-title">
+    <header>
+      <h2 id="capture-title">찍기</h2>
+      <p>활동이 끝난 그 자리에서 사진 한 장. 찍은 사진은 정리함에 모였다가, 나중에 활동으로 묶어요.</p>
+    </header>
+    <div class="player" data-chapter="capture"></div>
+    <div class="list"></div>
+  </section>
+
+  <section class="chapter" id="organize" aria-labelledby="organize-title">
+    <header>
+      <h2 id="organize-title">정리하기</h2>
+      <p>정리함에 모인 캡처를 골라 활동 하나로 묶고, 질문에 답해 기록을 채워요.</p>
+    </header>
+    <div class="player" data-chapter="organize"></div>
+    <div class="list"></div>
+  </section>
+
+  <section class="chapter" id="browse" aria-labelledby="browse-title">
+    <header>
+      <h2 id="browse-title">모아보기</h2>
+      <p>영역과 학년별로 모인 활동을 열어 보고, 빈 칸은 언제든 채우고, 검색으로 찾아요.</p>
+    </header>
+    <div class="player" data-chapter="browse"></div>
+    <div class="list"></div>
+  </section>
+
+  <section class="chapter" id="backup" aria-labelledby="backup-title">
+    <header>
+      <h2 id="backup-title">백업</h2>
+      <p>기록은 폰에만 있어요. 구글 드라이브를 한 번 연결해 두면 앱이 하루 한 번 알아서 백업해요.</p>
+    </header>
+    <div class="player" data-chapter="backup"></div>
+    <div class="list"></div>
+  </section>
+
+  <section class="chapter" id="move" aria-labelledby="move-title">
+    <header>
+      <h2 id="move-title">새 폰으로 옮기기</h2>
+      <p>폰을 바꿨다면 새 폰에 앱을 깔고, 구글 드라이브에 올려 둔 백업으로 기록을 되살려요.</p>
+    </header>
+    <div class="player" data-chapter="move"></div>
+    <div class="list"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  // 장면 그림의 판 위치·타자 줄·긴 화면 (캡처에서 잰 값, tools/make_frames.py → page/img/<장>/meta.json)
+  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}};
+  // 누를 곳: 캡처를 폭 923으로 줄여 본 자리(왼쪽 위·오른쪽 아래)를 화면 비율로 (원본 1440×3120, 위 140줄 잘라 냄)
+  const D = (x0, y0, x1, y1, o) => Object.assign({ x: x0 / 923, y: (y0 * 1.5601 - 140) / 2920, w: (x1 - x0) / 923, h: ((y1 - y0) * 1.5601) / 2920, r: 0.02 }, o || {});
+
+  // 장마다: 누를 곳(box) + 단계(시작 화면 at, 설명 글, 하는 일 act)
+  const CHAPTERS = {
+    start: {
+      box: {
+        newStart: D(45, 1610, 878, 1725, { r: .026 }),
+        yearCards: D(45, 408, 878, 978, { r: .03 }),
+        y2025: D(46, 558, 877, 681, { r: .026 }),
+        startBtn: D(45, 1808, 878, 1922, { r: .026 }),
+        plus: D(411, 1845, 511, 1945, { pill: true }),
+        camAllow: D(40, 1565, 883, 1660, { r: .02 }),
+        notifyYes: D(99, 1077, 824, 1183, { r: .026 }),
+        permAllow: D(40, 1678, 883, 1772, { r: .02 }),
+        yearRow: D(45, 828, 878, 944, { r: .01 }),
+        changeBtn: D(45, 1808, 878, 1922, { r: .026 }),
+      },
+      steps: [
+        { at: { base: 'start' }, cap: '[새로 시작]을 눌러요', sub: '폰을 바꿨다면 [백업에서 복원]을 눌러요', act: [['tap', 'newStart']] },
+        { at: { base: 'year' }, cap: '입학한 해를 골라요', sub: '오른쪽에 지금 몇 학년인지 나와요', act: [['spot', 'yearCards'], ['tap', 'y2025'], ['show', 'year-picked'], ['wait', 300], ['unspot']] },
+        { at: { base: 'year-picked' }, cap: '[시작하기]를 눌러요', sub: '기록마다 학년·학기가 알아서 붙어요', act: [['tap', 'startBtn']] },
+        { at: { base: 'home-empty' }, cap: '준비 끝! 이제 ＋로 찍어요', sub: '찍는 법은 바로 다음 장에 있어요', act: [['ring', 'plus'], ['wait', 1200]] },
+        { more: true, at: { base: 'home-empty', dialog: 'cam' }, cap: '처음 찍을 때 카메라를 허락해요', sub: '＋ → [카메라]를 누르면 폰이 물어봐요', act: [['tap', 'camAllow']] },
+        { more: true, at: { base: 'home-one', dialog: 'notify' }, cap: '첫 캡처 뒤에 알림을 물어요', sub: '쌓였을 때와 학기말에만 알려요', act: [['tap', 'notifyYes']] },
+        { more: true, at: { base: 'home-one', dialog: 'notify-perm' }, cap: '폰이 한 번 더 물으면 [허용]', sub: '알림은 설정에서 언제든 끌 수 있어요', act: [['tap', 'permAllow']] },
+        { more: true, at: { base: 'settings-bottom' }, cap: '입학 연도는 [설정]에서 바꿔요', sub: '설정 아래쪽 [입학 연도]를 눌러요', act: [['tap', 'yearRow']] },
+        { more: true, at: { base: 'year-settings', via: 'push' }, cap: '다시 골라 [바꾸기]를 눌러요', sub: '학년·학기를 다시 계산할지 물어봐요', act: [['ring', 'yearCards'], ['wait', 800], ['ring', 'changeBtn'], ['wait', 1000]] },
+      ],
+    },
+    capture: {
+      box: {
+        plus: { x: .4451, y: .9377, w: .1083, h: .0534, pill: true },
+        camera: { x: .0389, y: .8551, w: .2903, h: .1240, r: .026 },
+        club: { x: .1854, y: .6377, w: .1479, h: .0414, pill: true },
+        memo: { x: .0486, y: .7791, w: .9028, h: .0562, r: .02 },
+        save: { x: .0486, y: .8603, w: .9028, h: .0616, r: .026 },
+        inbox: { x: .2167, y: .9377, w: .1681, h: .0534, r: .03 },
+        firstCapture: { x: .0486, y: .1342, w: .2896, h: .1428, r: .03 },
+        addExist: { x: .3576, y: .9377, w: .2813, h: .0322, r: .015 },
+        enzyme: { x: .0486, y: .5318, w: .9028, h: .0534, r: .02 },
+      },
+      steps: [
+        { at: { base: 'home' }, cap: '아래 가운데 ＋를 눌러요', sub: '활동이 끝난 그 자리에서 바로 찍어요', act: [['tap', 'plus']] },
+        { at: { base: 'home', sheet: 'plus' }, cap: '[카메라]를 눌러요', sub: '찍어 둔 사진은 [갤러리]에서 골라요', act: [['tap', 'camera']] },
+        { at: { base: 'home', dim: true }, cap: '사진을 찍고 확인을 눌러요', sub: '폰의 카메라 화면이 열려요', act: [['wait', 400], ['flash'], ['wait', 300]] },
+        { at: { base: 'home', sheet: 'sheet' }, cap: '영역을 골라요', sub: '모르겠으면 [나중에] 그대로 둬도 돼요', act: [['tap', 'club']] },
+        { at: { base: 'home', sheet: 'sheet-club' }, cap: '무엇을 했는지 한 줄 적어요', sub: '안 써도 돼요', act: [['tap', 'memo'], ['zoom', 'memo'], ['type', 'memo'], ['wait', 600], ['unzoom']] },
+        { at: { base: 'home', sheet: 'sheet-memo' }, cap: '[저장]을 눌러요', sub: '학년·학기는 사진 날짜로 알아서 붙어요', act: [['spot', 'save'], ['tap', 'save'], ['unspot']] },
+        { at: { base: 'home-after' }, cap: '[정리함]을 눌러 봐요', sub: '찍은 사진은 정리함에 모여요', act: [['tap', 'inbox']] },
+        { at: { base: 'inbox' }, cap: '여기 모였어요', sub: '몇 장 모이면 [정리하기]에서 활동으로 묶어요', act: [['ring', 'firstCapture'], ['wait', 1400]] },
+        { more: true, at: { base: 'inbox', sheet: 'memo-only' }, cap: '메모만 남길 때', sub: '＋ → [메모만]을 눌러요. 메모 한 줄은 꼭 써요', act: [['ring', 'memo'], ['wait', 1400]] },
+        { more: true, at: { base: 'inbox', sheet: 'sheet-memo' }, cap: '기존 활동에 넣을 때', sub: '저장 판에서 [기존 활동에 추가]를 눌러요', act: [['tap', 'addExist']] },
+        { more: true, at: { base: 'inbox', sheet: 'pick-act' }, cap: '넣을 활동을 골라요', sub: '정리함을 거치지 않고 그 활동에 바로 들어가요', act: [['tap', 'enzyme'], ['wait', 500]] },
+      ],
+    },
+    organize: {
+      box: {
+        tile1: D(45, 341, 312, 608, { r: .03 }),
+        tile2: D(326, 305, 593, 572, { r: .03 }),
+        tile3: D(606, 305, 873, 572, { r: .03 }),
+        bind: D(45, 1684, 878, 1800, { r: .026 }),
+        nameField: D(82, 545, 842, 650),
+        motiveField: D(82, 633, 842, 1035),
+        keyField: D(82, 744, 842, 850),
+        next: D(609, 1851, 878, 1966, { r: .026 }),
+        skip: D(425, 1862, 588, 1958),
+        done: D(609, 1851, 878, 1966, { r: .026 }),
+        backInbox: D(45, 1814, 878, 1930, { r: .026 }),
+        newAct: D(688, 108, 878, 188, { pill: true }),
+        checkbox: D(72, 815, 498, 880, { r: .015 }),
+        fullView: D(38, 108, 178, 170, { r: .015 }),
+        oneByOne: D(38, 108, 148, 170, { r: .015 }),
+      },
+      steps: [
+        { at: { base: 'inbox3' }, cap: '캡처 하나를 길게 눌러요', sub: '같은 활동의 캡처를 골라 활동 하나로 묶어요', act: [['hold', 'tile1']] },
+        { at: { base: 'sel1' }, cap: '함께 묶을 캡처를 더 눌러요', sub: '사진도 메모도 같이 묶을 수 있어요', act: [['tap', 'tile2'], ['show', 'sel2'], ['wait', 250], ['tap', 'tile3'], ['show', 'sel3']] },
+        { at: { base: 'sel3' }, cap: '[새 활동으로 묶기]를 눌러요', sub: '고른 캡처가 활동 하나가 돼요', act: [['spot', 'bind'], ['tap', 'bind'], ['unspot']] },
+        { at: { base: 'card1' }, cap: '활동 이름을 적고 [다음]', sub: '영역은 캡처에서, 학년은 사진 날짜로 미리 채워져요', act: [['tap', 'nameField'], ['zoom', 'nameField'], ['type', 'name'], ['wait', 250], ['unzoom'], ['tap', 'next']] },
+        { at: { base: 'card2' }, cap: '질문에 답하고 [다음]', sub: '위에 묶은 사진을 보며 떠올려 봐요', act: [['tap', 'motiveField'], ['zoom', 'motiveField'], ['type', 'motive'], ['wait', 250], ['unzoom'], ['tap', 'next']] },
+        { at: { base: 'card3' }, cap: '쓰기 어려운 질문은 [건너뛰기]', sub: '빈 칸은 나중에 활동에서 언제든 채워요', act: [['tap', 'skip']] },
+        { at: { base: 'card7' }, cap: '키워드를 넣고 [완료]', sub: '단어를 쓰고 엔터를 누르면 칩이 돼요', act: [['tap', 'keyField'], ['zoom', 'keyField'], ['wait', 200], ['show', 'card7-chips'], ['wait', 600], ['unzoom'], ['tap', 'done']] },
+        { at: { base: 'detail', scroll: 0 }, cap: '활동이 만들어졌어요', sub: '아래로 내려 [정리함으로 돌아가기]를 눌러요', act: [['wait', 400], ['scroll', 'detail'], ['tap', 'backInbox']] },
+        { at: { base: 'inbox-empty' }, cap: '정리함이 비었어요', sub: '묶은 캡처는 활동 안으로 들어갔어요', act: [['wait', 1000]] },
+        { more: true, at: { base: 'inbox-empty' }, cap: '사진 없이 바로 적을 때는 [새 활동]', sub: '정리함 오른쪽 위에 있어요', act: [['tap', 'newAct']] },
+        { more: true, at: { base: 'new-card' }, cap: '지난 생기부를 보며 적을 때는 체크해요', sub: '체크하면 학년을 직접 골라요', act: [['ring', 'checkbox'], ['wait', 1200]] },
+        { more: true, at: { base: 'card2' }, cap: '질문을 한 화면에서 보려면 [전체 보기]', sub: '첫 카드를 채우면 위 왼쪽에서 눌러요', act: [['tap', 'fullView']] },
+        { more: true, at: { base: 'full-view' }, cap: '모든 질문이 한 화면에 나와요', sub: '[한 장씩]을 누르면 다시 한 장씩 봐요', act: [['ring', 'oneByOne'], ['wait', 1200]] },
+      ],
+    },
+    browse: {
+      box: {
+        chip2: D(332, 359, 465, 439, { pill: true }),
+        clubCard: D(475, 476, 878, 757, { r: .03 }),
+        act1: D(45, 624, 878, 848, { r: .026 }),
+        photo: { x: 0, y: 0, w: 1, h: 0.2876, r: 0 },
+        contentRow: D(45, 1270, 878, 1455, { r: .01 }),
+        plusContent: D(770, 1351, 842, 1422, { pill: true }),
+        answerField: D(82, 625, 842, 1026),
+        doneKb: D(609, 1003, 878, 1118, { r: .026 }),
+        filledRow: D(45, 1270, 878, 1437, { r: .01 }),
+        search: D(45, 225, 878, 322, { r: .02 }),
+        sedukCard: D(45, 1095, 448, 1377, { r: .03 }),
+        daesu: D(45, 508, 878, 632, { r: .026 }),
+        subjAct1: D(45, 624, 878, 848, { r: .026 }),
+        more: D(806, 90, 896, 180, { pill: true }),
+        menuItems: D(22, 1630, 901, 1936, { r: .02 }),
+      },
+      steps: [
+        { at: { base: 'home-all' }, cap: '학년 칩으로 골라 봐요', sub: '[2학년]을 누르면 그 학년 활동 수만 보여요', act: [['tap', 'chip2']] },
+        { at: { base: 'home-2' }, cap: '영역 카드를 눌러요', sub: '그 영역의 활동이 모여 있어요', act: [['tap', 'clubCard']] },
+        { at: { base: 'club-list', via: 'push' }, cap: '활동을 눌러 열어요', sub: '점은 질문에 얼마나 답했는지 보여 줘요', act: [['tap', 'act1']] },
+        { at: { base: 'detail1', via: 'push' }, cap: '사진은 옆으로 밀어 넘겨요', sub: '사진을 누르면 크게 볼 수 있어요', act: [['swipe', 'detail2']] },
+        { at: { base: 'detail2' }, cap: '빈 칸은 ＋로 언제든 채워요', sub: '그 질문 하나만 열려요', act: [['spot', 'contentRow'], ['tap', 'plusContent'], ['unspot']] },
+        { at: { base: 'card', via: 'up' }, cap: '답을 적고 [완료]', sub: '닫으면 적은 글이 저절로 저장돼요', act: [['tap', 'answerField'], ['show', 'kb-empty'], ['type', 'answer'], ['wait', 300], ['tap', 'doneKb']] },
+        { at: { base: 'detail-filled', via: 'down' }, cap: '채운 칸은 눌러서 바로 고쳐요', sub: '진행도 점도 하나 늘었어요', act: [['ring', 'filledRow'], ['wait', 900]] },
+        { at: { base: 'home-2', via: 'pop' }, cap: '검색창에 낱말을 쳐서 찾아요', sub: '활동명·키워드·태그·과목명으로 찾아요', act: [['tap', 'search'], ['type', 'search'], ['wait', 1200]] },
+        { more: true, at: { base: 'home-2' }, cap: '세특은 과목부터 골라요', sub: '[세특] 카드를 누르면 학기별 과목이 나와요', act: [['tap', 'sedukCard']] },
+        { more: true, at: { base: 'subj-list', via: 'push' }, cap: '과목을 눌러 활동을 봐요', sub: '학기마다 과목이 나뉘어 있어요', act: [['tap', 'daesu']] },
+        { more: true, at: { base: 'subj-acts', via: 'push' }, cap: '활동을 열어 볼게요', sub: '과목 안에서도 학기별로 나뉘어 있어요', act: [['tap', 'subjAct1']] },
+        { more: true, at: { base: 'menu', via: 'push' }, cap: '[⋯]에서 고치고 지워요', sub: '활동 오른쪽 위에 있어요', act: [['ring', 'more'], ['wait', 700], ['ring', 'menuItems'], ['wait', 1200]] },
+      ],
+    },
+    backup: {
+      box: {
+        settingsTab: D(770, 1845, 890, 1950, { r: .03 }),
+        driveRow: D(45, 605, 878, 728, { r: .01 }),
+        connectBtn: D(45, 1740, 878, 1856, { r: .026 }),
+        account3: D(84, 1098, 840, 1198, { r: .015 }),
+        continueBtn: D(476, 1347, 868, 1435, { pill: true }),
+        driveRowC: D(45, 605, 878, 722, { r: .01 }),
+        backupNow: D(45, 407, 878, 522, { r: .026 }),
+        backupCard: D(45, 220, 878, 375, { r: .03 }),
+        exportRow: D(45, 848, 878, 966, { r: .01 }),
+        exportOptions: D(20, 1735, 903, 1950, { r: .02 }),
+        pwRow: D(45, 966, 878, 1085, { r: .01 }),
+        pwWarn: D(45, 1110, 878, 1340, { r: .03 }),
+      },
+      // 만드는 중·올리는 중 창의 도는 동그라미 (화면 비율. 캡처의 멈춘 동그라미는 지움, chapters/backup.json)
+      spinners: { making: { x: .5, y: .4274, d: .0803 }, uploading: { x: .5, y: .3952, d: .0803 } },
+      steps: [
+        { at: { base: 'home' }, cap: '아래 [설정]을 눌러요', sub: '백업은 설정에 모여 있어요', act: [['tap', 'settingsTab']] },
+        { at: { base: 'settings' }, cap: '[구글 드라이브]를 눌러요', sub: '연결하면 앱이 하루 한 번 알아서 백업해요', act: [['tap', 'driveRow']] },
+        { at: { base: 'settings', sheet: 'connect' }, cap: '[구글 드라이브 연결]을 눌러요', sub: '폰을 잃어버리거나 바꿔도 기록을 되살릴 수 있어요', act: [['spot', 'connectBtn'], ['tap', 'connectBtn'], ['unspot']] },
+        { at: { base: 'settings', dialog: 'account' }, cap: '백업할 구글 계정을 골라요', sub: '학교 계정보다 개인 계정을 권해요', act: [['tap', 'account3']] },
+        { at: { base: 'consent', via: 'up' }, cap: '[계속]을 눌러 허락해요', sub: '앱은 자기가 만든 백업 파일만 다뤄요', act: [['tap', 'continueBtn']] },
+        { at: { base: 'connected', via: 'down' }, cap: '연결됐어요', sub: '[지금 백업하기]로 바로 한 번 백업해 둘게요', act: [['ring', 'driveRowC'], ['wait', 700], ['tap', 'backupNow']] },
+        { at: { base: 'after', dialog: 'making' }, cap: '백업 파일을 만들어 드라이브에 올려요', sub: '앱을 닫지 말고 기다려 주세요', act: [['wait', 1000], ['dialog', 'uploading'], ['wait', 1300]] },
+        { at: { base: 'after' }, cap: '백업이 끝났어요', sub: '맨 위에서 마지막 백업 날짜를 확인해요', act: [['ring', 'backupCard'], ['wait', 1200]] },
+        { more: true, at: { base: 'after' }, cap: '파일로도 보관할 수 있어요', sub: '드라이브 없이 [파일로 내보내기]로 백업 파일을 만들어요', act: [['tap', 'exportRow']] },
+        { more: true, at: { base: 'after', sheet: 'export' }, cap: '둘 곳을 골라요', sub: 'PC나 메일로도 옮겨 두면 더 안전해요', act: [['ring', 'exportOptions'], ['wait', 1200]] },
+        { more: true, at: { base: 'after' }, cap: '암호로 잠글 수도 있어요', sub: '[백업 암호]를 정하면 다른 사람이 파일을 열어도 못 봐요', act: [['tap', 'pwRow']] },
+        { more: true, at: { base: 'password', via: 'push' }, cap: '암호와 힌트를 정해요', sub: '암호를 잊으면 복원이 어려워요. 힌트를 꼭 적어 두세요', act: [['ring', 'pwWarn'], ['wait', 1200]] },
+      ],
+    },
+    move: {
+      box: {
+        restoreBtn: D(45, 1750, 878, 1865, { r: .026 }),
+        pickBtn: D(45, 1808, 878, 1922, { r: .026 }),
+        menuBtn: D(25, 106, 100, 181, { pill: true }),
+        driveRow: D(18, 1215, 610, 1360, { r: .015 }),
+        myDrive: D(30, 722, 905, 880, { r: .015 }),
+        latest: D(30, 1052, 905, 1205, { r: .015 }),
+        summary: D(45, 337, 878, 721, { r: .03 }),
+        restoreGo: D(45, 1808, 878, 1922, { r: .026 }),
+        toHome: D(45, 1808, 878, 1922, { r: .026 }),
+        homeCards: D(45, 476, 878, 1377, { r: .03 }),
+        phoneFile: D(30, 722, 905, 882, { r: .015 }),
+        driveSet: D(45, 605, 878, 728, { r: .01 }),
+      },
+      // 복원 중 화면의 진행 막대 (원본에서 잰 값: 막대 x 70~1369·y 1354~1381, 숫자 오른쪽 끝 1369·가운데 1443·글자 49px, 글꼴 여백만큼 맞춤, 사진 10장)
+      bars: { 'restoring-empty': { x: .0486, y: .4158, w: .9028, h: .0096, right: .9556, cy: .4479, size: .034, total: 10, rest: 3, ms: 2600 } },
+      steps: [
+        { at: { base: 'start' }, cap: '새 폰에서는 [백업에서 복원]', sub: '앱을 깔고 처음 켠 화면에서 눌러요', act: [['tap', 'restoreBtn']] },
+        { at: { base: 'guide', via: 'push' }, cap: '[백업 파일 고르기]를 눌러요', sub: '와이파이에서 하는 게 좋아요', act: [['tap', 'pickBtn']] },
+        { at: { base: 'picker' }, cap: '파일 창 왼쪽 위 ☰를 눌러요', sub: '폰마다 처음 열리는 곳이 달라요', act: [['tap', 'menuBtn']] },
+        { at: { base: 'menu' }, cap: '[Drive]를 눌러요', sub: '백업을 올린 구글 계정을 골라요', act: [['tap', 'driveRow']] },
+        { at: { base: 'drive-root' }, cap: '[내 드라이브]를 눌러요', sub: '그 안의 [스스로그 백업] 폴더를 열어요', act: [['tap', 'myDrive']] },
+        { at: { base: 'folder' }, cap: '가장 최근 파일을 골라요', sub: '파일 이름에 만든 날짜와 시각이 있어요', act: [['spot', 'latest'], ['tap', 'latest'], ['unspot']] },
+        { at: { base: 'confirm' }, cap: '날짜를 보고 [복원하기]', sub: '활동·사진 수도 맞는지 봐요', act: [['ring', 'summary'], ['wait', 700], ['tap', 'restoreGo']] },
+        { at: { base: 'restoring-empty' }, cap: '앱을 닫지 말고 기다려요', sub: '사진이 많으면 몇 분 걸릴 수 있어요', act: [['fill'], ['wait', 700]] },
+        { at: { base: 'done' }, cap: '복원했어요', sub: '[모아보기로]를 누르면 끝이에요', act: [['tap', 'toHome']] },
+        { at: { base: 'home' }, cap: '기록이 그대로 돌아왔어요', sub: '사진·트로피도 함께 돌아와요', act: [['ring', 'homeCards'], ['wait', 1200]] },
+        { more: true, at: { base: 'picker' }, cap: '폰에 둔 백업 파일로도 돼요', sub: '[파일로 내보내기]로 둔 곳에서 골라요', act: [['ring', 'phoneFile'], ['wait', 600], ['tap', 'phoneFile']] },
+        { more: true, at: { base: 'settings' }, cap: '드라이브도 다시 연결해요', sub: '새 폰에서도 [구글 드라이브]를 눌러요', act: [['tap', 'driveSet']] },
+      ],
+    },
+  };
+
+  const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ABORT = new Error('abort');
+  const DIM = 0.4; // 앱의 판 뒤 어둡게 (캡처에서 잰 값: 원래 화면 × 0.6)
+  const FINGER = '<g fill="#18181B" stroke="#18181B" stroke-width="3.2" stroke-linejoin="round"><rect x="11" y="2" width="9" height="27" rx="4.5"/><rect x="18.6" y="13.5" width="8" height="15" rx="4"/><rect x="25.2" y="16.2" width="7.4" height="13.5" rx="3.7"/><rect x="31.2" y="19.4" width="6.4" height="12" rx="3.2"/><rect x="11" y="21" width="26.6" height="21.5" rx="9"/><rect x="3.4" y="21.5" width="9" height="15.5" rx="4.5" transform="rotate(-32 7.9 29.2)"/></g><g fill="#FFFFFF"><rect x="11" y="2" width="9" height="27" rx="4.5"/><rect x="18.6" y="13.5" width="8" height="15" rx="4"/><rect x="25.2" y="16.2" width="7.4" height="13.5" rx="3.7"/><rect x="31.2" y="19.4" width="6.4" height="12" rx="3.2"/><rect x="11" y="21" width="26.6" height="21.5" rx="9"/><rect x="3.4" y="21.5" width="9" height="15.5" rx="4.5" transform="rotate(-32 7.9 29.2)"/></g><g fill="none" stroke="#D4D4D8" stroke-width="1" stroke-linecap="round"><path d="M18.6 22.5v4"/><path d="M25.2 23.5v4"/><path d="M31.2 25v4"/></g>';
+  const ICON = {
+    play: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"></path></svg>',
+    pause: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4.5" height="16" rx="1.2"></rect><rect x="13.5" y="4" width="4.5" height="16" rx="1.2"></rect></svg>',
+    prev: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>',
+    next: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>',
+    again: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>',
+  };
+  const PLAYER_HTML = `
+    <div class="cap" aria-live="polite"><span class="num"></span><span class="more" hidden>이것도 돼요</span><div class="txt"><p class="main"></p><p class="sub"></p></div></div>
+    <div class="screen" role="img" aria-label="스스로그 앱 화면">
+      <div class="zoom">
+        <img class="layer baseA" alt=""><img class="layer baseB" alt="" style="opacity:0"><div class="bar"><i></i></div><span class="barcount"></span><div class="dim"></div>
+        <img class="layer sheetA" alt="" style="opacity:0"><img class="layer sheetB" alt="" style="opacity:0"><img class="layer dialogA" alt="" style="opacity:0"><div class="spin"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19.5"></circle></svg></div>
+        <div class="typebox"></div><div class="caret"></div><div class="flash"></div>
+      </div>
+      <div class="spot"></div><div class="ring"></div><div class="press"></div><div class="ripple"></div>
+      <svg class="hold" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="40"></circle><circle class="arc" cx="50" cy="50" r="44" pathLength="100"></circle></svg>
+      <svg class="finger" viewBox="0 0 40 48" aria-hidden="true">${FINGER}</svg>
+    </div>
+    <div class="controls">
+      <button type="button" class="prev" aria-label="이전 단계">${ICON.prev}</button>
+      <button type="button" class="play primary" aria-label="재생"></button>
+      <button type="button" class="next" aria-label="다음 단계">${ICON.next}</button>
+      <span class="count"></span>
+      <button type="button" class="again" aria-label="처음부터 다시 보기" title="처음부터 다시 보기">${ICON.again}</button>
+    </div>`;
+
+  // 글 속 [버튼 이름]을 굵게
+  function bracket(text) {
+    const s = document.createElement('span');
+    text.split(/(\[[^\]]+\])/).forEach((part) => {
+      if (/^\[[^\]]+\]$/.test(part)) { const b = document.createElement('b'); b.textContent = part; s.appendChild(b); }
+      else s.appendChild(document.createTextNode(part));
+    });
+    return s;
+  }
+
+  const players = [];
+  document.querySelectorAll('.player[data-chapter]').forEach((root) => players.push(makePlayer(root)));
+
+  function makePlayer(root) {
+    const id = root.dataset.chapter;
+    const { box: BOX, steps: STEPS, spinners: SPIN = {}, bars: BARS = {} } = CHAPTERS[id];
+    const M = META[id];
+    const IMG = (n) => `img/${id}/${n}.webp`;
+    root.innerHTML = PLAYER_HTML;
+    const q = (c) => root.querySelector(`.${c}`);
+    const el = {};
+    ['screen', 'zoom', 'baseA', 'baseB', 'bar', 'barcount', 'dim', 'sheetA', 'sheetB', 'dialogA', 'spin', 'typebox', 'caret', 'flash', 'spot', 'ring', 'press', 'ripple', 'hold', 'finger', 'num', 'more', 'main', 'sub', 'prev', 'play', 'next', 'count', 'again']
+      .forEach((k) => { el[k] = q(k); });
+    el.arc = el.hold.querySelector('.arc');
+    el.barFill = el.bar.firstElementChild;
+    let runId = 0, step = 0, playing = false, ended = false, cur = {};
+    const live = new Set();
+
+    // 그림 미리 받기
+    const names = new Set();
+    STEPS.forEach((s) => { names.add(s.at.base); if (s.at.sheet) names.add(s.at.sheet); if (s.at.dialog) names.add(s.at.dialog); s.act.forEach(([k, a]) => { if (k === 'show' || k === 'dialog') names.add(a); }); });
+    Object.values(M.typing || {}).forEach((t) => { names.add(t.empty); names.add(t.done); });
+    names.forEach((n) => { const i = new Image(); i.src = IMG(n); });
+
+    const size = () => ({ W: el.screen.clientWidth, H: el.screen.clientHeight });
+    function px(name) {
+      const b = BOX[name], { W, H } = size();
+      const w = b.w * W, h = b.h * H;
+      return { x: b.x * W, y: b.y * H, w, h, r: b.pill ? Math.min(w, h) / 2 : b.r * W, cx: b.x * W + w / 2, cy: b.y * H + h / 2, pill: !!b.pill };
+    }
+    // 테두리·주변 어둡게 자리. inside면 화면 밖으로 나가지 않게 안쪽으로 맞춤 (화면 끝에 닿은 판·버튼)
+    function setBox(node, b, pad = 0, inside = false) {
+      if (inside && b.pill) { // 동그라미(화면 아래 끝의 ＋ 등)는 모양을 지키며 사방 간격만 똑같이 줄임
+        const { W, H } = size(), m = 1;
+        pad = Math.max(0, Math.min(pad, b.x - m, b.y - m, W - m - b.x - b.w, H - m - b.y - b.h));
+        inside = false;
+      }
+      let x0 = b.x - pad, y0 = b.y - pad, x1 = b.x + b.w + pad, y1 = b.y + b.h + pad;
+      if (inside) {
+        const { W, H } = size(), m = 4;
+        x0 = Math.max(m, x0); y0 = Math.max(m, y0); x1 = Math.min(W - m, x1); y1 = Math.min(H - m, y1);
+      }
+      Object.assign(node.style, { left: `${x0}px`, top: `${y0}px`, width: `${x1 - x0}px`, height: `${y1 - y0}px`, borderRadius: `${b.r + pad}px` });
+    }
+    const sheetTop = (n) => (M.sheets[n] ? M.sheets[n].top : 0);
+    function setSrc(img, n) {
+      const src = IMG(n);
+      if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+      return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+    }
+    // 바탕 그림: 긴 화면(스크롤)이면 키를 늘이고 내린 만큼 올림
+    function tallShift(n, scroll) { const t = M.tall && M.tall[n]; return t ? `translateY(${-(scroll ? t.scroll : 0) / t.h * 100}%)` : 'none'; }
+    function applyBase(img, n, scroll) {
+      const t = M.tall && M.tall[n];
+      img.style.height = t ? `${t.h * 100}%` : '100%';
+      img.style.objectFit = t ? 'fill' : 'cover';
+      img.style.transform = tallShift(n, scroll);
+      return setSrc(img, n);
+    }
+
+    async function anim(node, frames, opt) {
+      const my = runId;
+      if (RM) { Object.keys(frames[frames.length - 1]).forEach((k) => { if (k !== 'offset' && k !== 'easing') node.style[k] = frames[frames.length - 1][k]; }); return; }
+      const a = node.animate(frames, Object.assign({ fill: 'forwards' }, opt));
+      live.add(a);
+      try { await a.finished; } catch (e) { throw ABORT; } finally { live.delete(a); }
+      if (my !== runId) throw ABORT;
+      const last = frames[frames.length - 1];
+      Object.keys(last).forEach((k) => { if (k !== 'offset' && k !== 'easing') node.style[k] = last[k]; });
+      a.cancel();
+    }
+    function wait(ms) {
+      const my = runId;
+      return new Promise((res, rej) => setTimeout(() => (my === runId ? res() : rej(ABORT)), ms)); // 움직임 줄이기여도 쉬는 시간은 그대로
+    }
+    function stopAll() {
+      runId++;
+      live.forEach((a) => { try { a.cancel(); } catch (e) { /* 이미 끝남 */ } });
+      live.clear();
+    }
+
+    function renderState(s) {
+      applyBase(el.baseA, s.base, s.scroll);
+      el.baseA.style.opacity = '1'; el.baseB.style.opacity = '0'; el.baseB.style.transform = 'none';
+      el.dim.style.opacity = String(dimOf(s));
+      const bar = barSet(s.base, BARS[s.base] ? BARS[s.base].rest : 0);
+      el.bar.style.opacity = el.barcount.style.opacity = bar ? '1' : '0';
+      if (s.dialog) { setSrc(el.dialogA, s.dialog); el.dialogA.style.opacity = '1'; el.dialogA.style.transform = 'none'; } else el.dialogA.style.opacity = '0';
+      el.spin.style.opacity = s.dialog && placeSpin(s.dialog) ? '1' : '0';
+      if (s.sheet) { setSrc(el.sheetA, s.sheet); el.sheetA.style.transform = 'none'; el.sheetA.style.opacity = '1'; }
+      else el.sheetA.style.opacity = '0';
+      el.sheetB.style.opacity = '0';
+      el.typebox.replaceChildren(); el.caret.style.opacity = '0'; el.flash.style.opacity = '0';
+      el.zoom.style.transform = 'none';
+      ['spot', 'ring', 'press', 'ripple', 'hold', 'finger'].forEach((k) => { el[k].style.opacity = '0'; });
+      cur = Object.assign({}, s);
+    }
+
+    // 판·창 뒤를 어둡게 하는 정도: 앱의 판·창은 0.4, 구글 창 같은 것은 캡처에서 잰 값
+    const dimOf = (s) => (s.dialog ? (M.dialogs[s.dialog].dim) : (s.sheet || s.dim ? DIM : 0));
+    // 가운데 창의 도는 동그라미: 캡처의 멈춘 동그라미 자리에 (있는 창만)
+    function placeSpin(n) {
+      const sp = n && SPIN[n];
+      if (!sp) return false;
+      const { W, H } = size(), d = sp.d * W;
+      Object.assign(el.spin.style, { width: `${d}px`, height: `${d}px`, transform: `translate(${sp.x * W - d / 2}px, ${sp.y * H - d / 2}px)` });
+      return true;
+    }
+    // 진행 막대: 바탕 화면에 막대가 있으면 자리를 맞추고 값(v / 전체)을 넣음. 없으면 숨김
+    function barSet(n, v) {
+      const b = BARS[n];
+      if (!b) { el.bar.style.opacity = '0'; el.barcount.style.opacity = '0'; return false; }
+      const { W, H } = size();
+      Object.assign(el.bar.style, { left: `${b.x * W}px`, top: `${b.y * H}px`, width: `${b.w * W}px`, height: `${b.h * H}px` });
+      Object.assign(el.barcount.style, { left: `${b.right * W}px`, top: `${b.cy * H}px`, fontSize: `${b.size * W}px` });
+      el.barFill.style.width = `${v / b.total * 100}%`;
+      el.barcount.textContent = `${v}\u2009/\u2009${b.total}`; // 좁은 빈칸: 앱처럼 촘촘히
+      return true;
+    }
+    const barShow = (on) => Promise.all(['bar', 'barcount'].map((k) => anim(el[k], [{ opacity: el[k].style.opacity || '0' }, { opacity: on ? '1' : '0' }], { duration: 160 })));
+    async function dialogIn(n) {
+      await setSrc(el.dialogA, n);
+      const spin = placeSpin(n);
+      await Promise.all([
+        spin ? anim(el.spin, [{ opacity: '0' }, { opacity: '1' }], { duration: 220 }) : null,
+        anim(el.dialogA, [{ opacity: '0', transform: 'scale(.96)' }, { opacity: '1', transform: 'scale(1)' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }),
+        anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: String(M.dialogs[n].dim) }], { duration: 220 }),
+      ]);
+    }
+    async function dialogOut(dimTo) {
+      await Promise.all([
+        el.spin.style.opacity !== '0' ? anim(el.spin, [{ opacity: el.spin.style.opacity || '1' }, { opacity: '0' }], { duration: 160 }) : null,
+        anim(el.dialogA, [{ opacity: '1' }, { opacity: '0' }], { duration: 160 }),
+        anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: String(dimTo) }], { duration: 200 }),
+      ]);
+    }
+    async function dialogSwap(n) {
+      await anim(el.dialogA, [{ opacity: '1' }, { opacity: '0.35' }], { duration: 90 });
+      await setSrc(el.dialogA, n);
+      el.spin.style.opacity = placeSpin(n) ? '1' : '0';
+      await anim(el.dialogA, [{ opacity: '0.35' }, { opacity: '1' }], { duration: 140 });
+    }
+    async function sheetUp(n) {
+      await setSrc(el.sheetA, n);
+      const { H } = size(), off = `translateY(${H * (1 - sheetTop(n))}px)`;
+      el.sheetA.style.transform = off; el.sheetA.style.opacity = '1';
+      await Promise.all([
+        anim(el.sheetA, [{ transform: off }, { transform: 'translateY(0px)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' }),
+        anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: String(DIM) }], { duration: 300 }),
+      ]);
+    }
+    async function sheetDown(n, keepDim) {
+      const { H } = size(), off = `translateY(${H * (1 - sheetTop(n))}px)`;
+      await Promise.all([
+        anim(el.sheetA, [{ transform: 'translateY(0px)' }, { transform: off }], { duration: 300, easing: 'cubic-bezier(.4,0,1,1)' }),
+        anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: keepDim ? String(DIM) : '0' }], { duration: 300 }),
+      ]);
+      el.sheetA.style.opacity = '0'; el.sheetA.style.transform = 'none';
+    }
+    async function sheetSwap(n, ms = 140) {
+      await setSrc(el.sheetB, n);
+      await anim(el.sheetB, [{ opacity: '0' }, { opacity: '1' }], { duration: ms });
+      await setSrc(el.sheetA, n);
+      el.sheetB.style.opacity = '0';
+    }
+    async function baseSwap(n, scroll, ms = 160) {
+      await applyBase(el.baseB, n, scroll);
+      await anim(el.baseB, [{ opacity: '0' }, { opacity: '1' }], { duration: ms });
+      await applyBase(el.baseA, n, scroll);
+      el.baseB.style.opacity = '0';
+    }
+    // 화면 이동: push 오른쪽에서 들어옴 / pop 오른쪽으로 빠짐 / up 아래에서 올라옴 / down 아래로 내려감 (앱과 같은 방향)
+    async function baseMove(n, via) {
+      const ms = 380, ease = 'cubic-bezier(.2,.8,.2,1)';
+      const axis = via === 'up' || via === 'down' ? 'Y' : 'X';
+      const far = `translate${axis}(100%)`, zero = `translate${axis}(0%)`, near = axis === 'X' ? 'translateX(-28%)' : 'translateY(0%)';
+      if (via === 'push' || via === 'up') { // 새 화면이 위로 들어옴
+        await applyBase(el.baseB, n, false);
+        el.baseB.style.transform = far; el.baseB.style.opacity = '1';
+        await Promise.all([
+          anim(el.baseB, [{ transform: far }, { transform: zero }], { duration: ms, easing: ease }),
+          anim(el.baseA, [{ transform: zero }, { transform: near }], { duration: ms, easing: ease }),
+        ]);
+        await applyBase(el.baseA, n, false);
+      } else { // 지금 화면이 빠지며 새 화면이 드러남
+        await applyBase(el.baseB, cur.base, cur.scroll);
+        el.baseB.style.transform = zero; el.baseB.style.opacity = '1';
+        await applyBase(el.baseA, n, false);
+        await Promise.all([
+          anim(el.baseB, [{ transform: zero }, { transform: far }], { duration: ms, easing: ease }),
+          anim(el.baseA, [{ transform: near }, { transform: zero }], { duration: ms, easing: ease }),
+        ]);
+      }
+      el.baseA.style.transform = 'none'; el.baseB.style.transform = 'none'; el.baseB.style.opacity = '0';
+    }
+    async function goTo(to) {
+      const from = cur, toDim = !!(to.sheet || to.dim || to.dialog);
+      const baseChange = from.base !== to.base || !!from.scroll !== !!to.scroll;
+      if (baseChange && BARS[from.base]) await barShow(false);
+      // 뒤 어둡기가 같은 창끼리는 창만 바꿔 끼움. 다르면(앱 창 → 폰 허락 창) 앞 창이 사라졌다가 새 창이 떠오름
+      if (from.dialog && to.dialog && from.dialog !== to.dialog && !baseChange && from.sheet === to.sheet && M.dialogs[from.dialog].dim === M.dialogs[to.dialog].dim) { await dialogSwap(to.dialog); cur = Object.assign({}, to); return; }
+      if (from.dialog && (from.dialog !== to.dialog || baseChange)) await dialogOut(!baseChange && toDim ? (to.sheet || to.dim ? DIM : 0.4) : 0);
+      const sameSpot = from.sheet && to.sheet && !baseChange && sheetTop(from.sheet) === sheetTop(to.sheet);
+      if (sameSpot && from.sheet !== to.sheet) await sheetSwap(to.sheet);
+      else {
+        if (from.sheet && (from.sheet !== to.sheet || baseChange)) await sheetDown(from.sheet, !baseChange && toDim);
+        if (baseChange) await (to.via ? baseMove(to.base, to.via) : baseSwap(to.base, to.scroll)); // 판·창은 이미 닫힘
+        if (to.sheet && (to.sheet !== from.sheet || baseChange)) await sheetUp(to.sheet);
+      }
+      if (baseChange && BARS[to.base]) { barSet(to.base, 0); await barShow(true); }
+      if (to.dialog && (to.dialog !== from.dialog || baseChange)) await dialogIn(to.dialog);
+      else if (!to.sheet && !to.dialog) await anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: toDim ? String(DIM) : '0' }], { duration: 250 });
+      cur = Object.assign({}, to);
+    }
+
+    // 손가락: 끝이 누를 곳 가운데에
+    function fingerAt(b) {
+      const { W } = size(), F = W * 0.16;
+      el.finger.style.width = `${F}px`; el.finger.style.height = `${F * 1.2}px`;
+      return { x: b.cx - F * 0.3875, y: b.cy - F * 1.2 * 0.052 };
+    }
+    const tf = (p, s = 1) => `translate(${p.x}px, ${p.y}px) scale(${s})`;
+    async function fingerIn(b) {
+      const end = fingerAt(b), { W, H } = size();
+      const start = { x: end.x + W * 0.17, y: end.y + H * 0.07 };
+      await anim(el.finger, [{ opacity: '0', transform: tf(start) }, { opacity: '1', transform: tf(end) }], { duration: 440, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      await wait(90);
+      await anim(el.finger, [{ transform: tf(end) }, { transform: tf(end, 0.86) }], { duration: 110, easing: 'ease-out' });
+      return end;
+    }
+    async function release(b, end) {
+      const { W, H } = size();
+      setBox(el.press, b);
+      const R = Math.max(Math.min(Math.max(b.w, b.h) * 1.25, W * 0.5), W * 0.2);
+      Object.assign(el.ripple.style, { width: `${R}px`, height: `${R}px` });
+      const at = (s) => `translate(${b.cx - R / 2}px, ${b.cy - R / 2}px) scale(${s})`;
+      await Promise.all([
+        anim(el.press, [{ opacity: '0' }, { opacity: '1', offset: 0.25 }, { opacity: '0' }], { duration: 560 }),
+        anim(el.ripple, [{ opacity: '0.9', transform: at(0.15) }, { opacity: '0', transform: at(1) }], { duration: 600, easing: 'cubic-bezier(.1,.6,.3,1)' }),
+        anim(el.finger, [{ transform: tf(end, 0.86) }, { transform: tf(end, 1) }], { duration: 180, delay: 140, easing: 'ease-out' }),
+      ]);
+      await anim(el.finger, [{ opacity: '1', transform: tf(end) }, { opacity: '0', transform: tf({ x: end.x + W * 0.06, y: end.y + H * 0.03 }) }], { duration: 200, easing: 'ease-in' });
+    }
+
+    const OPS = {
+      wait: (ms) => wait(ms),
+      async tap(name) { const b = px(name); const end = await fingerIn(b); await release(b, end); },
+      async hold(name) { // 길게 누르기: 누른 채 동그라미가 차오름
+        const b = px(name), { W } = size();
+        const end = await fingerIn(b);
+        const R = W * 0.26;
+        Object.assign(el.hold.style, { width: `${R}px`, height: `${R}px`, transform: `translate(${b.cx - R / 2}px, ${b.cy - R / 2}px)` });
+        el.arc.style.strokeDashoffset = '100';
+        await anim(el.hold, [{ opacity: '0' }, { opacity: '1' }], { duration: 120 });
+        await anim(el.arc, [{ strokeDashoffset: '100' }, { strokeDashoffset: '0' }], { duration: 750, easing: 'linear' });
+        await Promise.all([anim(el.hold, [{ opacity: '1' }, { opacity: '0' }], { duration: 260 }), release(b, end)]);
+      },
+      async show(n) { await baseSwap(n, false, 120); cur.base = n; },
+      async dialog(n) { await dialogSwap(n); cur.dialog = n; },
+      async swipe(n) { // 위 사진만 손가락으로 밀어 넘김
+        const b = px('photo'), { W } = size();
+        const clip = `inset(0 0 ${(1 - BOX.photo.h) * 100}% 0)`;
+        const mk = () => { const i = document.createElement('img'); i.className = 'layer'; i.alt = ''; i.style.clipPath = clip; el.typebox.appendChild(i); return i; };
+        const oldI = mk(), newI = mk();
+        newI.style.transform = 'translateX(100%)';
+        await Promise.all([setSrc(oldI, cur.base), setSrc(newI, n)]);
+        await applyBase(el.baseA, n, false); // 아래 바탕은 미리 새 화면으로 (두 사진이 늘 사진 칸을 덮음)
+        const y = b.y + b.h * 0.55, f0 = fingerAt({ cx: W * 0.8, cy: y }), f1 = fingerAt({ cx: W * 0.2, cy: y });
+        await anim(el.finger, [{ opacity: '0', transform: tf(f0, 1.05) }, { opacity: '1', transform: tf(f0, 0.92) }], { duration: 300 });
+        await Promise.all([
+          anim(el.finger, [{ transform: tf(f0, 0.92), opacity: '1' }, { transform: tf(f1, 0.92), opacity: '1', offset: 0.7 }, { transform: tf(f1, 1), opacity: '0' }], { duration: 760, easing: 'ease-in-out' }),
+          anim(oldI, [{ transform: 'translateX(0%)' }, { transform: 'translateX(-100%)' }], { duration: 560, delay: 80, easing: 'cubic-bezier(.3,.6,.2,1)' }),
+          anim(newI, [{ transform: 'translateX(100%)' }, { transform: 'translateX(0%)' }], { duration: 560, delay: 80, easing: 'cubic-bezier(.3,.6,.2,1)' }),
+        ]);
+        cur.base = n; oldI.remove(); newI.remove();
+      },
+      async scroll(n) { // 손가락으로 위로 밀어 내리기
+        const t = M.tall[n], { W, H } = size();
+        const s = { x: W * 0.5, y: H * 0.78 }, f = fingerAt({ cx: s.x, cy: s.y });
+        el.finger.style.transform = tf(f);
+        await anim(el.finger, [{ opacity: '0', transform: tf(f, 1.05) }, { opacity: '1', transform: tf(f, 0.92) }], { duration: 300 });
+        const up = { x: f.x, y: f.y - H * 0.42 };
+        await Promise.all([
+          anim(el.baseA, [{ transform: tallShift(n, false) }, { transform: tallShift(n, true) }], { duration: 1100, easing: 'cubic-bezier(.45,.05,.25,1)' }),
+          anim(el.finger, [{ transform: tf(f, 0.92), opacity: '1' }, { transform: tf(up, 0.92), opacity: '1', offset: 0.55 }, { transform: tf(up, 1), opacity: '0' }], { duration: 900, easing: 'ease-in-out' }),
+        ]);
+        cur.scroll = 1;
+      },
+      async spot(name) {
+        setBox(el.spot, px(name), 0, true);
+        await anim(el.spot, [{ opacity: '0' }, { opacity: '1' }], { duration: 320 });
+        await wait(350);
+      },
+      unspot: () => anim(el.spot, [{ opacity: '1' }, { opacity: '0' }], { duration: 260 }),
+      async ring(name) {
+        setBox(el.ring, px(name), 5, true);
+        await anim(el.ring, [{ opacity: '0', transform: 'scale(1.12)' }, { opacity: '1', transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        await anim(el.ring, [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 700, easing: 'ease-in-out' });
+      },
+      async fill() { // 진행 막대가 한 칸씩 부드럽게 차오르고 숫자가 함께 올라감 (사진 하나씩)
+        const b = BARS[cur.base];
+        if (!b) return;
+        for (let i = 1; i <= b.total; i++) {
+          await anim(el.barFill, [{ width: el.barFill.style.width || '0%' }, { width: `${i / b.total * 100}%` }], { duration: b.ms / b.total, easing: 'cubic-bezier(.3,.6,.3,1)' });
+          el.barcount.textContent = `${i}\u2009/\u2009${b.total}`;
+        }
+      },
+      flash: () => anim(el.flash, [{ opacity: '0' }, { opacity: '0.95', offset: 0.18 }, { opacity: '0' }], { duration: 520, easing: 'ease-out' }),
+      async zoom(name) {
+        const b = BOX[name];
+        el.zoom.style.transformOrigin = `${(b.x + b.w / 2) * 100}% ${(b.y + b.h / 2) * 100}%`;
+        await anim(el.zoom, [{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }], { duration: 480, easing: 'cubic-bezier(.3,.7,.2,1)' });
+      },
+      unzoom: () => anim(el.zoom, [{ transform: 'scale(1.6)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'cubic-bezier(.4,0,.2,1)' }),
+      async type(key) { // 글자가 한 줄씩, 한 자씩 쳐짐
+        const T = M.typing[key], { W, H } = size(), onSheet = T.layer === 'sheet';
+        if (onSheet) await sheetSwap(T.empty, 90); else await baseSwap(T.empty, false, 90); // 첫 글자를 치면 안내 글이 사라짐
+        const total = T.lines.reduce((a, l) => a + l.w, 0);
+        const imgs = [];
+        for (const l of T.lines) {
+          const img = document.createElement('img');
+          img.className = 'layer typing'; img.alt = '';
+          await setSrc(img, T.done);
+          const top = (l.y - 0.006) * 100, bottom = (1 - l.y - l.h - 0.006) * 100, left = (l.x - 0.004) * 100;
+          const from = `inset(${top}% ${100 - left}% ${bottom}% ${left}%)`, to = `inset(${top}% ${(1 - l.x - l.w - 0.01) * 100}% ${bottom}% ${left}%)`;
+          img.style.clipPath = from;
+          el.typebox.appendChild(img); imgs.push(img);
+          const n = Math.max(2, Math.round(T.chars * l.w / total)), dur = n * 72;
+          Object.assign(el.caret.style, { left: `${l.x * W}px`, top: `${(l.y - 0.004) * H}px`, height: `${(l.h + 0.008) * H}px`, opacity: '1', transform: 'translateX(0px)' });
+          await Promise.all([
+            anim(img, [{ clipPath: from }, { clipPath: to }], { duration: dur, easing: `steps(${n}, end)` }),
+            anim(el.caret, [{ transform: 'translateX(0px)' }, { transform: `translateX(${(l.w - 0.003) * W}px)` }], { duration: dur, easing: `steps(${n}, end)` }),
+          ]);
+        }
+        if (onSheet) await setSrc(el.sheetA, T.done); else { await applyBase(el.baseA, T.done, false); cur.base = T.done; }
+        imgs.forEach((i) => i.remove());
+        await anim(el.caret, [{ opacity: '1' }, { opacity: '0' }], { duration: 300, easing: 'steps(2, end)' });
+      },
+    };
+
+    // 단계 글 목록
+    const listButtons = [];
+    const list = root.parentElement.querySelector('.list');
+    const ol = document.createElement('ol'); ol.className = 'steps';
+    const ul = document.createElement('ul'); ul.className = 'steps';
+    STEPS.forEach((s, i) => {
+      const li = document.createElement('li'), btn = document.createElement('button');
+      btn.type = 'button';
+      const mark = document.createElement('span');
+      if (s.more) mark.className = 'dot'; else { mark.className = 'n'; mark.textContent = String(i + 1); }
+      const t = document.createElement('span'); t.className = 't';
+      const strong = document.createElement('b'); strong.appendChild(bracket(s.cap));
+      const sub = document.createElement('span'); sub.appendChild(bracket(s.sub));
+      t.append(strong, sub); btn.append(mark, t);
+      btn.addEventListener('click', () => jump(i));
+      li.appendChild(btn); (s.more ? ul : ol).appendChild(li); listButtons.push(btn);
+    });
+    list.appendChild(ol);
+    if (ul.children.length) { const h = document.createElement('h3'); h.textContent = '이것도 돼요'; list.append(h, ul); }
+
+    function showButtons() {
+      el.play.innerHTML = playing ? ICON.pause : ICON.play;
+      el.play.setAttribute('aria-label', playing ? '멈춤' : '재생');
+      el.prev.disabled = step === 0;
+      el.next.disabled = step === STEPS.length - 1;
+      el.again.dataset.hot = ended ? '1' : '0';
+    }
+    function setStep(i) {
+      step = i;
+      const s = STEPS[i];
+      el.num.hidden = !!s.more; el.more.hidden = !s.more;
+      el.num.textContent = String(i + 1);
+      el.main.replaceChildren(bracket(s.cap));
+      el.sub.replaceChildren(bracket(s.sub));
+      el.count.textContent = `${i + 1} / ${STEPS.length}`;
+      listButtons.forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+      if (!RM) el.main.parentElement.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
+      showButtons();
+    }
+    // 멈춰 있을 때: 손가락이 누를 곳 위에 머묾 (따라 하기 좋게)
+    function showHint(i) {
+      const s = STEPS[i];
+      renderState(Object.assign({}, s.at, s.act.some(([k]) => k === 'scroll') ? { scroll: 1 } : {}));
+      if (s.act.some(([k]) => k === 'swipe')) { // 사진 넘기기: 사진 오른쪽에 손가락
+        const b = px('photo'), { W } = size();
+        el.finger.style.transform = tf(fingerAt({ cx: W * 0.8, cy: b.y + b.h * 0.55 })); el.finger.style.opacity = '1';
+        return;
+      }
+      const first = s.act.find(([k]) => k === 'tap' || k === 'spot' || k === 'ring' || k === 'hold');
+      if (!first) return;
+      const b = px(first[1]);
+      setBox(el.ring, b, 5, true); el.ring.style.transform = 'none'; el.ring.style.opacity = '1';
+      if (first[0] === 'spot') { setBox(el.spot, b, 0, true); el.spot.style.opacity = '1'; }
+      const press = s.act.find(([k]) => k === 'tap' || k === 'hold'); // 손가락은 누를 곳에
+      if (!press || first[0] === 'ring') return;
+      el.finger.style.transform = tf(fingerAt(px(press[1]))); el.finger.style.opacity = '1';
+    }
+
+    async function run(from) {
+      players.forEach((p) => { if (p !== api && p.isPlaying()) p.pause(); }); // 한 번에 한 장만
+      stopAll();
+      playing = true; ended = false;
+      try {
+        renderState(STEPS[from].at); setStep(from);
+        for (let i = from; i < STEPS.length; i++) {
+          if (i > from) {
+            await Promise.all(['ring', 'spot'].filter((k) => el[k].style.opacity !== '0')
+              .map((k) => anim(el[k], [{ opacity: el[k].style.opacity }, { opacity: '0' }], { duration: 200 })));
+            await goTo(STEPS[i].at); setStep(i);
+          }
+          await wait(i === from ? 400 : 550);
+          for (const [op, arg] of STEPS[i].act) await OPS[op](arg);
+          await wait(300);
+        }
+        playing = false; ended = true; showButtons();
+      } catch (e) {
+        if (e !== ABORT) { console.error(e); playing = false; showButtons(); }
+      }
+    }
+    function pause() { stopAll(); playing = false; showHint(step); showButtons(); }
+    function jump(i) {
+      i = Math.max(0, Math.min(STEPS.length - 1, i));
+      if (playing) { run(i); return; }
+      stopAll(); ended = false; setStep(i); showHint(i);
+    }
+    el.play.addEventListener('click', () => { if (playing) pause(); else run(ended ? 0 : step); });
+    el.prev.addEventListener('click', () => jump(step - 1));
+    el.next.addEventListener('click', () => jump(step + 1));
+    el.again.addEventListener('click', () => run(0));
+    window.addEventListener('resize', () => { if (!playing) showHint(step); });
+
+    // 처음 모습: 1단계 + 손가락. 화면에 처음 보이면 저절로 재생 (움직임 줄이기를 켠 사람은 단추로)
+    setStep(0); showHint(0);
+    if (!RM && 'IntersectionObserver' in window) {
+      let started = false;
+      const io = new IntersectionObserver((entries) => {
+        if (!started && entries.some((e) => e.isIntersecting)) { started = true; io.disconnect(); run(0); }
+      }, { threshold: 0.6 });
+      io.observe(el.screen);
+    }
+    const api = { pause, isPlaying: () => playing };
+    return api;
+  }
+})();
+</script>
+</body>
+</html>

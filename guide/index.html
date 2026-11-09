@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>스스로그 사용법</title>
-<meta name="description" content="스스로그 앱을 실제 화면으로 따라 하며 익혀요. 처음 시작, 찍기, 정리하기, 모아보기, 백업, 새 폰으로 옮기기">
+<meta name="description" content="스스로그 앱을 실제 화면으로 따라 하며 익혀요. 처음 시작, 찍기, 정리하기, 모아보기, 세특, 백업, 새 폰으로 옮기기">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
@@ -173,6 +173,7 @@ body { margin: 0; }
     <a href="#capture">찍기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#organize">정리하기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#browse">모아보기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#subject">세특<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#backup">백업<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#move">새 폰으로 옮기기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
   </nav>
@@ -213,6 +214,15 @@ body { margin: 0; }
     <div class="list"></div>
   </section>
 
+  <section class="chapter" id="subject" aria-labelledby="subject-title">
+    <header>
+      <h2 id="subject-title">세특</h2>
+      <p>세특 사진에는 과목이 함께 붙어요. 과목은 처음 한 번 등록해 두면 다음부터 버튼으로 골라요.</p>
+    </header>
+    <div class="player" data-chapter="subject"></div>
+    <div class="list"></div>
+  </section>
+
   <section class="chapter" id="backup" aria-labelledby="backup-title">
     <header>
       <h2 id="backup-title">백업</h2>
@@ -235,7 +245,7 @@ body { margin: 0; }
 <script>
 (() => {
   // 장면 그림의 판 위치·타자 줄·긴 화면 (캡처에서 잰 값, tools/make_frames.py → page/img/<장>/meta.json)
-  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}};
+  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
   // 누를 곳: 캡처를 폭 923으로 줄여 본 자리(왼쪽 위·오른쪽 아래)를 화면 비율로 (원본 1440×3120, 위 140줄 잘라 냄)
   const D = (x0, y0, x1, y1, o) => Object.assign({ x: x0 / 923, y: (y0 * 1.5601 - 140) / 2920, w: (x1 - x0) / 923, h: ((y1 - y0) * 1.5601) / 2920, r: 0.02 }, o || {});
 
@@ -357,6 +367,40 @@ body { margin: 0; }
         { more: true, at: { base: 'subj-list', via: 'push' }, cap: '과목을 눌러 활동을 봐요', sub: '학기마다 과목이 나뉘어 있어요', act: [['tap', 'daesu']] },
         { more: true, at: { base: 'subj-acts', via: 'push' }, cap: '활동을 열어 볼게요', sub: '과목 안에서도 학기별로 나뉘어 있어요', act: [['tap', 'subjAct1']] },
         { more: true, at: { base: 'menu', via: 'push' }, cap: '[⋯]에서 고치고 지워요', sub: '활동 오른쪽 위에 있어요', act: [['ring', 'more'], ['wait', 700], ['ring', 'menuItems'], ['wait', 1200]] },
+      ],
+    },
+    subject: {
+      box: {
+        plus: D(411, 1845, 511, 1945, { pill: true }),
+        camera: D(36, 1690, 304, 1922, { r: .026 }),
+        seteuk: D(575, 1283, 686, 1362, { pill: true }),
+        addSubj: D(368, 1377, 588, 1456, { r: .018 }),
+        searchField: D(45, 355, 878, 452, { r: .02 }),
+        chemRow: D(45, 566, 878, 686, { r: .01 }),
+        chemBtn: D(180, 1377, 300, 1456, { r: .018 }),
+        save: D(45, 1700, 878, 1815, { r: .026 }),
+        inboxTab: D(212, 1838, 342, 1950, { r: .03 }),
+        subjRow: D(45, 958, 878, 1076, { r: .01 }),
+        addSem: D(712, 415, 876, 472, { r: .015 }),
+        customRow: D(45, 1251, 878, 1359, { r: .02 }),
+        science: D(45, 812, 452, 928, { r: .026 }),
+        checked: D(45, 858, 878, 1292, { r: .015 }),
+        regBtn: D(45, 1808, 878, 1922, { r: .026 }),
+      },
+      steps: [
+        { at: { base: 'home' }, cap: '＋를 눌러 찍어요', sub: '찍는 법은 [찍기] 장과 같아요', act: [['tap', 'plus']] },
+        { at: { base: 'home', sheet: 'plus' }, cap: '[카메라]를 눌러요', sub: '찍어 둔 사진은 [갤러리]에서 골라요', act: [['tap', 'camera']] },
+        { at: { base: 'home', dim: true }, cap: '사진을 찍고 확인을 눌러요', sub: '수업 시간의 발표·실험·보고서를 그 자리에서', act: [['wait', 400], ['flash'], ['wait', 300]] },
+        { at: { base: 'home', sheet: 'sheet' }, cap: '영역에서 [세특]을 눌러요', sub: '세특에는 과목이 함께 붙어요', act: [['tap', 'seteuk']] },
+        { at: { base: 'home', sheet: 'sheet-seteuk', grow: true }, cap: '과목이 없으면 [＋ 과목 등록]', sub: '이번 학기에 등록한 과목이 버튼으로 나와요', act: [['spot', 'addSubj'], ['tap', 'addSubj'], ['unspot']] },
+        { at: { base: 'home', sheet: 'picker' }, cap: '과목 이름을 검색해요', sub: '교과 버튼을 눌러 찾아도 돼요', act: [['tap', 'searchField'], ['type', 'search'], ['wait', 700]] },
+        { at: { base: 'home', sheet: 'search' }, cap: '과목을 눌러요', sub: '고른 과목은 이번 학기 과목 버튼에 생겨요', act: [['tap', 'chemRow']] },
+        { at: { base: 'home', sheet: 'sheet-chem' }, cap: '[화학]이 골라졌어요. [저장]', sub: '다음부터는 [화학] 버튼만 누르면 돼요', act: [['ring', 'chemBtn'], ['wait', 600], ['tap', 'save']] },
+        { at: { base: 'home-after' }, cap: '정리함에 들어갔어요', sub: '정리할 때 영역과 과목이 미리 채워져요', act: [['ring', 'inboxTab'], ['wait', 1200]] },
+        { more: true, at: { base: 'settings' }, cap: '학기 초에 한꺼번에 등록해도 돼요', sub: '[설정] 아래쪽 [과목 관리]를 눌러요', act: [['tap', 'subjRow']] },
+        { more: true, at: { base: 'subjects', via: 'push' }, cap: '학기 옆 [＋ 과목 등록]을 눌러요', sub: '학기마다 듣는 과목을 등록해 둬요', act: [['tap', 'addSem']] },
+        { more: true, at: { base: 'subjects', sheet: 'picker' }, cap: '교과를 눌러 열어요', sub: '목록에 없는 과목은 맨 아래에서 직접 입력해요', act: [['ring', 'customRow'], ['wait', 600], ['tap', 'science']] },
+        { more: true, at: { base: 'subjects', sheet: 'science' }, cap: '여러 과목을 체크해 한 번에', sub: '아래 [2과목 등록]을 누르면 끝이에요', act: [['ring', 'checked'], ['wait', 700], ['tap', 'regBtn']] },
       ],
     },
     backup: {
@@ -625,6 +669,15 @@ body { margin: 0; }
       ]);
       el.sheetA.style.opacity = '0'; el.sheetA.style.transform = 'none';
     }
+    // 같은 판이 커짐: 새 판을 늘어난 만큼 내린 자리(위쪽 내용이 맞는 자리)에서 올리며 겹침
+    async function sheetGrow(from, n) {
+      const { H } = size(), d = (sheetTop(from) - sheetTop(n)) * H;
+      await setSrc(el.sheetB, n);
+      el.sheetB.style.transform = `translateY(${d}px)`;
+      await anim(el.sheetB, [{ opacity: '0', transform: `translateY(${d}px)` }, { opacity: '1', transform: `translateY(${d * 0.55}px)`, offset: 0.35 }, { opacity: '1', transform: 'translateY(0px)' }], { duration: 340, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      await setSrc(el.sheetA, n);
+      el.sheetB.style.opacity = '0'; el.sheetB.style.transform = 'none';
+    }
     async function sheetSwap(n, ms = 140) {
       await setSrc(el.sheetB, n);
       await anim(el.sheetB, [{ opacity: '0' }, { opacity: '1' }], { duration: ms });
@@ -670,6 +723,7 @@ body { margin: 0; }
       if (from.dialog && (from.dialog !== to.dialog || baseChange)) await dialogOut(!baseChange && toDim ? (to.sheet || to.dim ? DIM : 0.4) : 0);
       const sameSpot = from.sheet && to.sheet && !baseChange && sheetTop(from.sheet) === sheetTop(to.sheet);
       if (sameSpot && from.sheet !== to.sheet) await sheetSwap(to.sheet);
+      else if (to.grow && from.sheet && to.sheet && from.sheet !== to.sheet && !baseChange) await sheetGrow(from.sheet, to.sheet);
       else {
         if (from.sheet && (from.sheet !== to.sheet || baseChange)) await sheetDown(from.sheet, !baseChange && toDim);
         if (baseChange) await (to.via ? baseMove(to.base, to.via) : baseSwap(to.base, to.scroll)); // 판·창은 이미 닫힘

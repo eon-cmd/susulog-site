@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>스스로그 사용법</title>
-<meta name="description" content="스스로그 앱을 실제 화면으로 따라 하며 익혀요. 처음 시작, 찍기, 정리하기, 모아보기, 세특, 백업, 새 폰으로 옮기기">
+<meta name="description" content="스스로그 앱을 실제 화면으로 따라 하며 익혀요. 처음 시작, 찍기, 정리하기, 모아보기, 세특, 트로피, 백업, 새 폰으로 옮기기">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style>
@@ -174,6 +174,7 @@ body { margin: 0; }
     <a href="#organize">정리하기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#browse">모아보기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#subject">세특<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#trophy">트로피<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#backup">백업<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#move">새 폰으로 옮기기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
   </nav>
@@ -223,6 +224,15 @@ body { margin: 0; }
     <div class="list"></div>
   </section>
 
+  <section class="chapter" id="trophy" aria-labelledby="trophy-title">
+    <header>
+      <h2 id="trophy-title">트로피</h2>
+      <p>다 푼 문제집을 사진 한 장으로 남기면 트로피가 되어 명예의 전당에 쌓여요.</p>
+    </header>
+    <div class="player" data-chapter="trophy"></div>
+    <div class="list"></div>
+  </section>
+
   <section class="chapter" id="backup" aria-labelledby="backup-title">
     <header>
       <h2 id="backup-title">백업</h2>
@@ -245,7 +255,7 @@ body { margin: 0; }
 <script>
 (() => {
   // 장면 그림의 판 위치·타자 줄·긴 화면 (캡처에서 잰 값, tools/make_frames.py → page/img/<장>/meta.json)
-  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
+  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "trophy": {"sheets": {"menu": {"top": 0.6825, "base": "tab-daesu"}, "start-empty": {"top": 0.5914, "base": "tab"}, "start": {"top": 0.5914, "base": "tab"}, "pick": {"top": 0.8024, "base": "tab"}, "finish": {"top": 0.6058, "base": "tab"}, "finish-memo": {"top": 0.6058, "base": "tab"}, "pick-hall": {"top": 0.8024, "base": "hall"}, "upload": {"top": 0.4356, "base": "hall"}, "memo-empty": {"top": 0.6058, "base": "tab"}, "name-empty": {"top": 0.5914, "base": "tab"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "finish-memo", "chars": 8, "lines": [{"x": 0.3486, "y": 0.8558, "w": 0.3528, "h": 0.0168}]}, "name": {"layer": "sheet", "empty": "name-empty", "done": "start", "chars": 6, "lines": [{"x": 0.2972, "y": 0.7384, "w": 0.1674, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
   // 누를 곳: 캡처를 폭 923으로 줄여 본 자리(왼쪽 위·오른쪽 아래)를 화면 비율로 (원본 1440×3120, 위 140줄 잘라 냄)
   const D = (x0, y0, x1, y1, o) => Object.assign({ x: x0 / 923, y: (y0 * 1.5601 - 140) / 2920, w: (x1 - x0) / 923, h: ((y1 - y0) * 1.5601) / 2920, r: 0.02 }, o || {});
 
@@ -401,6 +411,38 @@ body { margin: 0; }
         { more: true, at: { base: 'subjects', via: 'push' }, cap: '학기 옆 [＋ 과목 등록]을 눌러요', sub: '학기마다 듣는 과목을 등록해 둬요', act: [['tap', 'addSem']] },
         { more: true, at: { base: 'subjects', sheet: 'picker' }, cap: '교과를 눌러 열어요', sub: '목록에 없는 과목은 맨 아래에서 직접 입력해요', act: [['ring', 'customRow'], ['wait', 600], ['tap', 'science']] },
         { more: true, at: { base: 'subjects', sheet: 'science' }, cap: '여러 과목을 체크해 한 번에', sub: '아래 [2과목 등록]을 누르면 끝이에요', act: [['ring', 'checked'], ['wait', 700], ['tap', 'regBtn']] },
+      ],
+    },
+    trophy: {
+      box: {
+        trophyTab: D(585, 1838, 708, 1950, { r: .03 }),
+        finishBtn: D(662, 689, 849, 769, { pill: true }),
+        camera: D(36, 1690, 450, 1922, { r: .026 }),
+        memo: D(288, 1655, 878, 1760, { r: .02 }),
+        upBtn: D(45, 1808, 878, 1922, { r: .026 }),
+        newTrophy: D(470, 618, 686, 988, { r: .03 }),
+        startLink: D(700, 545, 880, 595, { r: .015 }),
+        nameField: D(238, 1435, 878, 1541, { r: .02 }),
+        startGo: D(45, 1808, 878, 1922, { r: .026 }),
+        pauseRow: D(36, 1730, 887, 1848, { r: .015 }),
+        uploadLink: D(605, 118, 882, 178, { r: .015 }),
+        uploadName: D(288, 1143, 878, 1250, { r: .02 }),
+      },
+      steps: [
+        { at: { base: 'home' }, cap: '아래 [트로피]를 눌러요', sub: '다 푼 문제집이 트로피로 쌓여요', act: [['tap', 'trophyTab']] },
+        { at: { base: 'tab' }, cap: '다 풀었으면 [완주했어요]', sub: '풀고 있는 문제집은 도전 중에 있어요', act: [['spot', 'finishBtn'], ['tap', 'finishBtn'], ['unspot']] },
+        { at: { base: 'tab', sheet: 'pick' }, cap: '[카메라]를 눌러요', sub: '찍어 둔 사진은 [갤러리]에서 골라요', act: [['tap', 'camera']] },
+        { at: { base: 'tab', dim: true }, cap: '다 푼 문제집을 찍고 확인을 눌러요', sub: '폰의 카메라 화면이 열려요', act: [['wait', 400], ['flash'], ['wait', 300]] },
+        { at: { base: 'tab', sheet: 'finish' }, cap: '나에게 한마디 남겨요', sub: '며칠 만에 완주했는지 앱이 세어 줘요', act: [['tap', 'memo'], ['zoom', 'memo'], ['type', 'memo'], ['wait', 500], ['unzoom']] },
+        { at: { base: 'tab', sheet: 'finish-memo' }, cap: '[진열장에 올리기]를 눌러요', sub: '완주일은 사진 찍은 날로 채워져요', act: [['tap', 'upBtn']] },
+        { at: { base: 'celebrate', via: 'push' }, cap: '명예의 전당에서 축하해요', sub: '몇 번째 트로피인지 알려 줘요', act: [['wait', 1800]] },
+        { at: { base: 'hall' }, cap: '선반에 트로피가 놓였어요', sub: '학년별 선반에 완주한 순서대로 쌓여요', act: [['ring', 'newTrophy'], ['wait', 1200]] },
+        { more: true, at: { base: 'tab' }, cap: '풀기 시작할 때 [＋ 문제집 시작]', sub: '시작을 등록해 두면 며칠 만에 완주했는지 나와요', act: [['tap', 'startLink']] },
+        { more: true, at: { base: 'tab', sheet: 'start-empty' }, cap: '이름을 적고 [시작하기]', sub: '표지와 과목은 안 넣어도 돼요', act: [['tap', 'nameField'], ['zoom', 'nameField'], ['type', 'name'], ['wait', 400], ['unzoom'], ['tap', 'startGo']] },
+        { more: true, at: { base: 'tab-daesu', sheet: 'menu' }, cap: '잠깐 쉴 때는 [잠시 쉬기]', sub: '도전 중 카드를 누르면 나와요. 언제든 다시 도전해요', act: [['ring', 'pauseRow'], ['wait', 1200]] },
+        { more: true, at: { base: 'hall' }, cap: '결과만 올려도 돼요', sub: '시작을 안 했다면 명예의 전당 오른쪽 위를 눌러요', act: [['tap', 'uploadLink']] },
+        { more: true, at: { base: 'hall', sheet: 'pick-hall' }, cap: '사진부터 찍거나 골라요', sub: '다 푼 문제집 사진이 트로피가 돼요', act: [['tap', 'camera']] },
+        { more: true, at: { base: 'hall', sheet: 'upload' }, cap: '이름을 적고 [진열장에 올리기]', sub: '문제집 이름만 꼭 적으면 돼요', act: [['ring', 'uploadName'], ['wait', 1200]] },
       ],
     },
     backup: {

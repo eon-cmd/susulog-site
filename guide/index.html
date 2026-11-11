@@ -180,6 +180,7 @@ body { margin: 0; }
     <a href="#backup">백업<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#move">새 폰으로 옮기기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#export">꺼내기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#settings">그 밖의 설정<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
   </nav>
 
   <section class="chapter" id="start" aria-labelledby="start-title">
@@ -262,12 +263,21 @@ body { margin: 0; }
     <div class="player" data-chapter="export"></div>
     <div class="list"></div>
   </section>
+
+  <section class="chapter" id="settings" aria-labelledby="settings-title">
+    <header>
+      <h2 id="settings-title">그 밖의 설정</h2>
+      <p>알림 받을 요일과 시각, 앱 잠금처럼 내게 맞게 바꿀 수 있는 설정이에요.</p>
+    </header>
+    <div class="player" data-chapter="settings"></div>
+    <div class="list"></div>
+  </section>
 </main>
 
 <script>
 (() => {
   // 장면 그림의 판 위치·타자 줄·긴 화면 (캡처에서 잰 값, tools/make_frames.py → page/img/<장>/meta.json)
-  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "export": {"sheets": {"sheet": {"top": 0.4404, "base": "settings"}, "where": {"top": 0.7832, "base": "settings"}, "sheet-check": {"top": 0.4404, "base": "settings"}}, "typing": {}, "tall": {}, "dialogs": {"making": {"base": "settings", "dim": 0.409}}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "trophy": {"sheets": {"menu": {"top": 0.6825, "base": "tab-daesu"}, "start-empty": {"top": 0.5914, "base": "tab"}, "start": {"top": 0.5914, "base": "tab"}, "pick": {"top": 0.8024, "base": "tab"}, "finish": {"top": 0.6058, "base": "tab"}, "finish-memo": {"top": 0.6058, "base": "tab"}, "pick-hall": {"top": 0.8024, "base": "hall"}, "upload": {"top": 0.4356, "base": "hall"}, "memo-empty": {"top": 0.6058, "base": "tab"}, "name-empty": {"top": 0.5914, "base": "tab"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "finish-memo", "chars": 8, "lines": [{"x": 0.3486, "y": 0.8558, "w": 0.3528, "h": 0.0168}]}, "name": {"layer": "sheet", "empty": "name-empty", "done": "start", "chars": 6, "lines": [{"x": 0.2972, "y": 0.7384, "w": 0.1674, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
+  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "export": {"sheets": {"sheet": {"top": 0.4404, "base": "settings"}, "where": {"top": 0.7832, "base": "settings"}, "sheet-check": {"top": 0.4404, "base": "settings"}}, "typing": {}, "tall": {}, "dialogs": {"making": {"base": "settings", "dim": 0.409}}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "settings": {"sheets": {"week": {"top": 0.6788, "base": "mid"}, "week-mon": {"top": 0.6788, "base": "mid"}, "week-picked": {"top": 0.6788, "base": "mid"}, "lock": {"top": 0.5668, "base": "mid-days"}}, "typing": {}, "tall": {}, "dialogs": {"time": {"base": "mid-days", "dim": 0.6}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "trophy": {"sheets": {"menu": {"top": 0.6825, "base": "tab-daesu"}, "start-empty": {"top": 0.5914, "base": "tab"}, "start": {"top": 0.5914, "base": "tab"}, "pick": {"top": 0.8024, "base": "tab"}, "finish": {"top": 0.6058, "base": "tab"}, "finish-memo": {"top": 0.6058, "base": "tab"}, "pick-hall": {"top": 0.8024, "base": "hall"}, "upload": {"top": 0.4356, "base": "hall"}, "memo-empty": {"top": 0.6058, "base": "tab"}, "name-empty": {"top": 0.5914, "base": "tab"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "finish-memo", "chars": 8, "lines": [{"x": 0.3486, "y": 0.8558, "w": 0.3528, "h": 0.0168}]}, "name": {"layer": "sheet", "empty": "name-empty", "done": "start", "chars": 6, "lines": [{"x": 0.2972, "y": 0.7384, "w": 0.1674, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
   // 누를 곳: 캡처를 폭 923으로 줄여 본 자리(왼쪽 위·오른쪽 아래)를 화면 비율로 (원본 1440×3120, 위 140줄 잘라 냄)
   const D = (x0, y0, x1, y1, o) => Object.assign({ x: x0 / 923, y: (y0 * 1.5601 - 140) / 2920, w: (x1 - x0) / 923, h: ((y1 - y0) * 1.5601) / 2920, r: 0.02 }, o || {});
 
@@ -551,6 +561,38 @@ body { margin: 0; }
         { more: true, at: { base: 'settings', sheet: 'sheet-check', grow: true }, cap: '체크하면 수가 바뀌어요', sub: '생기부에 들어갔다고 표시한 활동만 꺼내요', act: [['ring', 'grade1'], ['wait', 1200]] },
       ],
     },
+    settings: {
+      box: {
+        settingsTab: D(770, 1845, 890, 1950, { r: .03 }),
+        weekRow: D(45, 752, 878, 872, { r: .01 }),
+        mon: D(45, 1632, 143, 1732, { pill: true }),
+        thu: D(412, 1632, 510, 1732, { pill: true }),
+        saveBtn: D(45, 1848, 878, 1963, { r: .026 }),
+        timeRow: D(45, 990, 878, 1108, { r: .01 }),
+        okBtn: D(640, 1225, 735, 1295, { r: .015 }),
+        lockRow: D(45, 1385, 878, 1502, { r: .026 }),
+        lockOptions: D(45, 1330, 878, 1923, { r: .03 }),
+        opt2: D(45, 1522, 878, 1690, { r: .03 }),
+        galleryRow: D(45, 1188, 878, 1305, { r: .026 }),
+        tagRow: D(45, 880, 878, 997, { r: .01 }),
+        tagList: D(45, 417, 878, 772, { r: .03 }),
+        infoGroup: D(45, 1078, 878, 1670, { r: .03 }),
+      },
+      steps: [
+        { at: { base: 'home' }, cap: '아래 [설정]을 눌러요', sub: '알림과 잠금도 설정에서 바꿔요', act: [['tap', 'settingsTab']] },
+        { at: { base: 'top' }, cap: '설정을 아래로 내려요', sub: '백업·복원 아래에 알림·사진·보안이 있어요', act: [['wait', 700], ['show', 'mid'], ['wait', 600]] },
+        { at: { base: 'mid' }, cap: '[요일 알림]을 눌러요', sub: '정리 알림은 쌓였을 때와 학기말에만 와요', act: [['tap', 'weekRow']] },
+        { at: { base: 'mid', sheet: 'week' }, cap: '알림 받을 요일을 고르고 [저장]', sub: '고른 요일에, 정리할 캡처가 있을 때만 알려요', act: [['tap', 'mon'], ['sheet', 'week-mon'], ['tap', 'thu'], ['sheet', 'week-picked'], ['wait', 400], ['tap', 'saveBtn']] },
+        { at: { base: 'mid-days' }, cap: '[알림 시각]도 바꿀 수 있어요', sub: '요일 알림 줄에는 고른 요일이 보여요', act: [['ring', 'weekRow'], ['wait', 700], ['tap', 'timeRow']] },
+        { at: { base: 'mid-days', dialog: 'time' }, cap: '시각을 정하고 [확인]', sub: '폰의 시계 창이 열려요', act: [['wait', 600], ['tap', 'okBtn']] },
+        { at: { base: 'mid-days' }, cap: '[앱 잠금]을 눌러요', sub: '다른 사람이 내 기록을 못 보게 잠가요', act: [['tap', 'lockRow']] },
+        { at: { base: 'mid-days', sheet: 'lock' }, cap: '언제 잠글지 골라요', sub: '지문·얼굴·폰 비밀번호로 풀어요. 따로 외울 암호는 없어요', act: [['ring', 'lockOptions'], ['wait', 900], ['tap', 'opt2']] },
+        { more: true, at: { base: 'mid-days' }, cap: '찍은 사진을 갤러리에도 남겨요', sub: '[카메라 사진 갤러리에도 저장]을 끄면 앱에만 남아요', act: [['ring', 'galleryRow'], ['wait', 1200]] },
+        { more: true, at: { base: 'bottom' }, cap: '태그는 [태그 관리]에서', sub: '설정 아래쪽 분류 관리에 있어요', act: [['tap', 'tagRow']] },
+        { more: true, at: { base: 'tags', via: 'push' }, cap: '태그를 눌러 이름을 바꾸거나 지워요', sub: '태그는 활동에 붙일 때 만들어져요', act: [['ring', 'tagList'], ['wait', 1200]] },
+        { more: true, at: { base: 'bottom' }, cap: '궁금한 점은 [문의하기]', sub: '메일 앱이 열려요. 앱 버전도 여기서 봐요', act: [['ring', 'infoGroup'], ['wait', 1200]] },
+      ],
+    },
   };
 
   const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -614,7 +656,7 @@ body { margin: 0; }
 
     // 그림 미리 받기
     const names = new Set();
-    STEPS.forEach((s) => { names.add(s.at.base); if (s.at.sheet) names.add(s.at.sheet); if (s.at.dialog) names.add(s.at.dialog); s.act.forEach(([k, a]) => { if (k === 'show' || k === 'dialog') names.add(a); }); });
+    STEPS.forEach((s) => { names.add(s.at.base); if (s.at.sheet) names.add(s.at.sheet); if (s.at.dialog) names.add(s.at.dialog); s.act.forEach(([k, a]) => { if (k === 'show' || k === 'dialog' || k === 'sheet') names.add(a); }); });
     Object.values(M.typing || {}).forEach((t) => { names.add(t.empty); names.add(t.done); });
     names.forEach((n) => { const i = new Image(); i.src = IMG(n); });
 
@@ -876,6 +918,7 @@ body { margin: 0; }
       },
       async show(n) { await baseSwap(n, false, 120); cur.base = n; },
       async dialog(n) { await dialogSwap(n); cur.dialog = n; },
+      async sheet(n) { await sheetSwap(n, 120); cur.sheet = n; }, // 같은 판의 그림만 바꿈 (요일을 고르면 버튼이 칠해짐)
       async swipe(n) { // 위 사진만 손가락으로 밀어 넘김
         const b = px('photo'), { W } = size();
         const clip = `inset(0 0 ${(1 - BOX.photo.h) * 100}% 0)`;

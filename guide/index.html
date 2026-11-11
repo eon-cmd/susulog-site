@@ -112,6 +112,8 @@ h1, h2 { text-wrap: balance; }
 .bar { position: absolute; left: 0; top: 0; opacity: 0; overflow: hidden; border-radius: 999px; background: var(--app-track); }
 .bar i { display: block; width: 0; height: 100%; border-radius: 999px; background: var(--app-accent); }
 .barcount { position: absolute; left: 0; top: 0; opacity: 0; transform: translate(-100%, -50%); color: var(--app-muted); font-family: var(--font); font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* 가운데 창 안의 진행 숫자: 캡처에서 지우고 페이지가 그려 올라가게 (CHAPTERS.<장>.counts) */
+.dcount { position: absolute; left: 0; top: 0; opacity: 0; transform: translate(0, -50%); color: #52525B; font-family: var(--font); font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; }
 .finger { position: absolute; left: 0; top: 0; opacity: 0; filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); pointer-events: none; transform-origin: 39% 5%; }
 
 .controls { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
@@ -534,12 +536,14 @@ body { margin: 0; }
       },
       // 만드는 중 창의 도는 동그라미 (화면 비율. 캡처의 멈춘 동그라미는 지움, chapters/export.json)
       spinners: { making: { x: .5, y: .4274, d: .0803 } },
+      // 만드는 중 창의 진행 숫자 (원본에서 잰 값: 숫자 왼쪽 끝 768·가운데 줄 1661·숫자 높이 37 → 글자 48px, 사진·문서 5개)
+      counts: { making: { x: .5333, cy: .5209, size: .0331, total: 5, rest: 3, ms: 2000 } },
       steps: [
         { at: { base: 'home' }, cap: '아래 [설정]을 눌러요', sub: '꺼내기는 설정에 있어요', act: [['tap', 'settingsTab']] },
         { at: { base: 'settings' }, cap: '[기록 꺼내기]를 눌러요', sub: '엑셀과 사진·문서를 앱 밖으로 꺼내요', act: [['tap', 'exportRow']] },
         { at: { base: 'settings', sheet: 'sheet' }, cap: '꺼낼 학년을 골라요', sub: '학년마다 엑셀과 사진·문서가 압축 파일 하나로 나와요', act: [['spot', 'gradeRows'], ['wait', 500], ['tap', 'grade2'], ['unspot']] },
         { at: { base: 'settings', sheet: 'where' }, cap: '[폰에 저장]을 눌러요', sub: '폰의 저장 창이 열리면 다운로드 폴더처럼 둘 곳을 골라요', act: [['tap', 'saveRow']] },
-        { at: { base: 'settings', dialog: 'making' }, cap: '기록을 모아 파일을 만들어요', sub: '사진이 많으면 시간이 걸려요', act: [['wait', 1800]] },
+        { at: { base: 'settings', dialog: 'making' }, cap: '기록을 모아 파일을 만들어요', sub: '사진이 많으면 시간이 걸려요', act: [['wait', 300], ['count'], ['wait', 700]] },
         { at: { base: 'saved' }, cap: '저장했어요', sub: '압축을 풀면 엑셀과 영역·활동 이름 폴더가 나와요', act: [['ring', 'toast'], ['wait', 1200]] },
         { at: { base: 'excel', via: 'up' }, cap: '엑셀을 열면 이렇게 보여요', sub: '영역마다 시트 하나, 활동마다 한 줄이에요', act: [['wait', 500], ['ring', 'tabs'], ['wait', 1200]] },
         { more: true, at: { base: 'settings', sheet: 'sheet' }, cap: '글만 엑셀 하나로도 꺼내요', sub: '[전체 기록 엑셀]은 모든 학년이 한 파일에, 사진은 빠져요', act: [['ring', 'allExcel'], ['wait', 1200]] },
@@ -565,7 +569,7 @@ body { margin: 0; }
     <div class="screen" role="img" aria-label="스스로그 앱 화면">
       <div class="zoom">
         <img class="layer baseA" alt=""><img class="layer baseB" alt="" style="opacity:0"><div class="bar"><i></i></div><span class="barcount"></span><div class="dim"></div>
-        <img class="layer sheetA" alt="" style="opacity:0"><img class="layer sheetB" alt="" style="opacity:0"><img class="layer dialogA" alt="" style="opacity:0"><div class="spin"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19.5"></circle></svg></div>
+        <img class="layer sheetA" alt="" style="opacity:0"><img class="layer sheetB" alt="" style="opacity:0"><img class="layer dialogA" alt="" style="opacity:0"><div class="spin"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19.5"></circle></svg></div><span class="dcount"></span>
         <div class="typebox"></div><div class="caret"></div><div class="flash"></div>
       </div>
       <div class="spot"></div><div class="ring"></div><div class="press"></div><div class="ripple"></div>
@@ -595,13 +599,13 @@ body { margin: 0; }
 
   function makePlayer(root) {
     const id = root.dataset.chapter;
-    const { box: BOX, steps: STEPS, spinners: SPIN = {}, bars: BARS = {} } = CHAPTERS[id];
+    const { box: BOX, steps: STEPS, spinners: SPIN = {}, bars: BARS = {}, counts: COUNTS = {} } = CHAPTERS[id];
     const M = META[id];
     const IMG = (n) => `img/${id}/${n}.webp`;
     root.innerHTML = PLAYER_HTML;
     const q = (c) => root.querySelector(`.${c}`);
     const el = {};
-    ['screen', 'zoom', 'baseA', 'baseB', 'bar', 'barcount', 'dim', 'sheetA', 'sheetB', 'dialogA', 'spin', 'typebox', 'caret', 'flash', 'spot', 'ring', 'press', 'ripple', 'hold', 'finger', 'num', 'more', 'main', 'sub', 'prev', 'play', 'next', 'count', 'again']
+    ['screen', 'zoom', 'baseA', 'baseB', 'bar', 'barcount', 'dim', 'sheetA', 'sheetB', 'dialogA', 'spin', 'dcount', 'typebox', 'caret', 'flash', 'spot', 'ring', 'press', 'ripple', 'hold', 'finger', 'num', 'more', 'main', 'sub', 'prev', 'play', 'next', 'count', 'again']
       .forEach((k) => { el[k] = q(k); });
     el.arc = el.hold.querySelector('.arc');
     el.barFill = el.bar.firstElementChild;
@@ -679,6 +683,7 @@ body { margin: 0; }
       el.bar.style.opacity = el.barcount.style.opacity = bar ? '1' : '0';
       if (s.dialog) { setSrc(el.dialogA, s.dialog); el.dialogA.style.opacity = '1'; el.dialogA.style.transform = 'none'; } else el.dialogA.style.opacity = '0';
       el.spin.style.opacity = s.dialog && placeSpin(s.dialog) ? '1' : '0';
+      el.dcount.style.opacity = s.dialog && placeCount(s.dialog) ? '1' : '0';
       if (s.sheet) { setSrc(el.sheetA, s.sheet); el.sheetA.style.transform = 'none'; el.sheetA.style.opacity = '1'; }
       else el.sheetA.style.opacity = '0';
       el.sheetB.style.opacity = '0';
@@ -698,6 +703,15 @@ body { margin: 0; }
       Object.assign(el.spin.style, { width: `${d}px`, height: `${d}px`, transform: `translate(${sp.x * W - d / 2}px, ${sp.y * H - d / 2}px)` });
       return true;
     }
+    // 가운데 창 안의 진행 숫자: 캡처에서 지운 숫자 자리에 (있는 창만). v를 빼면 멈춰 있을 때 보일 값(rest)
+    function placeCount(n, v) {
+      const c = n && COUNTS[n];
+      if (!c) return false;
+      const { W, H } = size();
+      Object.assign(el.dcount.style, { left: `${c.x * W}px`, top: `${c.cy * H}px`, fontSize: `${c.size * W}px` });
+      el.dcount.textContent = `${v === undefined ? c.rest : v} / ${c.total}`;
+      return true;
+    }
     // 진행 막대: 바탕 화면에 막대가 있으면 자리를 맞추고 값(v / 전체)을 넣음. 없으면 숨김
     function barSet(n, v) {
       const b = BARS[n];
@@ -712,9 +726,10 @@ body { margin: 0; }
     const barShow = (on) => Promise.all(['bar', 'barcount'].map((k) => anim(el[k], [{ opacity: el[k].style.opacity || '0' }, { opacity: on ? '1' : '0' }], { duration: 160 })));
     async function dialogIn(n) {
       await setSrc(el.dialogA, n);
-      const spin = placeSpin(n);
+      const spin = placeSpin(n), count = placeCount(n, 1);
       await Promise.all([
         spin ? anim(el.spin, [{ opacity: '0' }, { opacity: '1' }], { duration: 220 }) : null,
+        count ? anim(el.dcount, [{ opacity: '0' }, { opacity: '1' }], { duration: 220 }) : null,
         anim(el.dialogA, [{ opacity: '0', transform: 'scale(.96)' }, { opacity: '1', transform: 'scale(1)' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' }),
         anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: String(M.dialogs[n].dim) }], { duration: 220 }),
       ]);
@@ -722,6 +737,7 @@ body { margin: 0; }
     async function dialogOut(dimTo) {
       await Promise.all([
         el.spin.style.opacity !== '0' ? anim(el.spin, [{ opacity: el.spin.style.opacity || '1' }, { opacity: '0' }], { duration: 160 }) : null,
+        el.dcount.style.opacity === '1' ? anim(el.dcount, [{ opacity: '1' }, { opacity: '0' }], { duration: 160 }) : null,
         anim(el.dialogA, [{ opacity: '1' }, { opacity: '0' }], { duration: 160 }),
         anim(el.dim, [{ opacity: el.dim.style.opacity || '0' }, { opacity: String(dimTo) }], { duration: 200 }),
       ]);
@@ -730,6 +746,7 @@ body { margin: 0; }
       await anim(el.dialogA, [{ opacity: '1' }, { opacity: '0.35' }], { duration: 90 });
       await setSrc(el.dialogA, n);
       el.spin.style.opacity = placeSpin(n) ? '1' : '0';
+      el.dcount.style.opacity = placeCount(n, 1) ? '1' : '0';
       await anim(el.dialogA, [{ opacity: '0.35' }, { opacity: '1' }], { duration: 140 });
     }
     async function sheetUp(n) {
@@ -899,6 +916,11 @@ body { margin: 0; }
         await anim(el.ring, [{ opacity: '0', transform: 'scale(1.12)' }, { opacity: '1', transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.2,.8,.2,1)' });
         await anim(el.ring, [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 700, easing: 'ease-in-out' });
       },
+      async count() { // 가운데 창의 진행 숫자가 하나씩 올라감 (사진·문서 하나씩)
+        const c = COUNTS[cur.dialog];
+        if (!c) return;
+        for (let i = 2; i <= c.total; i++) { await wait(c.ms / c.total); el.dcount.textContent = `${i} / ${c.total}`; }
+      },
       async fill() { // 진행 막대가 한 칸씩 부드럽게 차오르고 숫자가 함께 올라감 (사진 하나씩)
         const b = BARS[cur.base];
         if (!b) return;
@@ -1004,6 +1026,7 @@ body { margin: 0; }
       playing = true; ended = false;
       try {
         renderState(STEPS[from].at); setStep(from);
+        if (STEPS[from].act.some(([k]) => k === 'count')) placeCount(STEPS[from].at.dialog, 1); // 이 단계부터 재생하면 진행 숫자는 1부터
         for (let i = from; i < STEPS.length; i++) {
           if (i > from) {
             await Promise.all(['ring', 'spot'].filter((k) => el[k].style.opacity !== '0')

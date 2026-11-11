@@ -177,6 +177,7 @@ body { margin: 0; }
     <a href="#trophy">트로피<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#backup">백업<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
     <a href="#move">새 폰으로 옮기기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+    <a href="#export">꺼내기<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
   </nav>
 
   <section class="chapter" id="start" aria-labelledby="start-title">
@@ -250,12 +251,21 @@ body { margin: 0; }
     <div class="player" data-chapter="move"></div>
     <div class="list"></div>
   </section>
+
+  <section class="chapter" id="export" aria-labelledby="export-title">
+    <header>
+      <h2 id="export-title">꺼내기</h2>
+      <p>기록을 엑셀과 사진·문서 파일로 꺼내 앱 없이 열어 볼 수 있어요. 꺼낸 파일은 사본이라, 복원은 백업으로 해요.</p>
+    </header>
+    <div class="player" data-chapter="export"></div>
+    <div class="list"></div>
+  </section>
 </main>
 
 <script>
 (() => {
   // 장면 그림의 판 위치·타자 줄·긴 화면 (캡처에서 잰 값, tools/make_frames.py → page/img/<장>/meta.json)
-  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "trophy": {"sheets": {"menu": {"top": 0.6825, "base": "tab-daesu"}, "start-empty": {"top": 0.5914, "base": "tab"}, "start": {"top": 0.5914, "base": "tab"}, "pick": {"top": 0.8024, "base": "tab"}, "finish": {"top": 0.6058, "base": "tab"}, "finish-memo": {"top": 0.6058, "base": "tab"}, "pick-hall": {"top": 0.8024, "base": "hall"}, "upload": {"top": 0.4356, "base": "hall"}, "memo-empty": {"top": 0.6058, "base": "tab"}, "name-empty": {"top": 0.5914, "base": "tab"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "finish-memo", "chars": 8, "lines": [{"x": 0.3486, "y": 0.8558, "w": 0.3528, "h": 0.0168}]}, "name": {"layer": "sheet", "empty": "name-empty", "done": "start", "chars": 6, "lines": [{"x": 0.2972, "y": 0.7384, "w": 0.1674, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
+  const META = {"backup": {"sheets": {"connect": {"top": 0.5551, "base": "settings"}, "export": {"top": 0.7832, "base": "after"}}, "typing": {}, "tall": {}, "dialogs": {"account": {"base": "settings", "dim": 0.318}, "making": {"base": "after", "dim": 0.402}, "uploading": {"base": "after", "dim": 0.402}}, "size": [720, 1460]}, "browse": {"sheets": {}, "typing": {"answer": {"layer": "base", "empty": "answer-empty", "done": "kb-typed", "chars": 26, "lines": [{"x": 0.1243, "y": 0.2966, "w": 0.6868, "h": 0.0171}]}, "search": {"layer": "base", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1562, "y": 0.0839, "w": 0.0694, "h": 0.0284}]}}, "tall": {}, "size": [720, 1460]}, "capture": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-club": {"top": 0.3829, "base": "home"}, "sheet-memo": {"top": 0.3829, "base": "home"}, "memo-only": {"top": 0.5075, "base": "inbox"}, "pick-act": {"top": 0.0, "base": "inbox"}, "memo-empty": {"top": 0.3829, "base": "home"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "sheet-memo", "chars": 14, "lines": [{"x": 0.0854, "y": 0.7932, "w": 0.5396, "h": 0.0264}]}}, "tall": {}, "size": [720, 1460]}, "export": {"sheets": {"sheet": {"top": 0.4404, "base": "settings"}, "where": {"top": 0.7832, "base": "settings"}, "sheet-check": {"top": 0.4404, "base": "settings"}}, "typing": {}, "tall": {}, "dialogs": {"making": {"base": "settings", "dim": 0.409}}, "size": [720, 1460]}, "move": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "organize": {"sheets": {}, "typing": {"name": {"layer": "base", "empty": "name-empty", "done": "card1-typed", "chars": 11, "lines": [{"x": 0.1243, "y": 0.2558, "w": 0.5097, "h": 0.0284}]}, "motive": {"layer": "base", "empty": "motive-empty", "done": "card2-typed", "chars": 29, "lines": [{"x": 0.1243, "y": 0.3113, "w": 0.6368, "h": 0.0171}, {"x": 0.1243, "y": 0.3342, "w": 0.1458, "h": 0.0284}]}}, "tall": {"detail": {"h": 1.6277, "scroll": 0.6277, "match": 0.02}}, "size": [720, 1460]}, "start": {"sheets": {}, "typing": {}, "tall": {}, "dialogs": {"cam": {"base": "home-empty", "dim": 0.179}, "notify": {"base": "home-one", "dim": 0.401}, "notify-perm": {"base": "home-one", "dim": 0.179}}, "size": [720, 1460]}, "subject": {"sheets": {"plus": {"top": 0.8024, "base": "home"}, "sheet": {"top": 0.3829, "base": "home"}, "sheet-seteuk": {"top": 0.3277, "base": "home"}, "picker": {"top": 0.0, "base": "home"}, "search": {"top": 0.0, "base": "home"}, "sheet-chem": {"top": 0.3277, "base": "home"}, "science": {"top": 0.0, "base": "subjects"}, "search-empty": {"top": 0.0, "base": "home"}}, "typing": {"search": {"layer": "sheet", "empty": "search-empty", "done": "search", "chars": 2, "lines": [{"x": 0.1569, "y": 0.1596, "w": 0.2118, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}, "trophy": {"sheets": {"menu": {"top": 0.6825, "base": "tab-daesu"}, "start-empty": {"top": 0.5914, "base": "tab"}, "start": {"top": 0.5914, "base": "tab"}, "pick": {"top": 0.8024, "base": "tab"}, "finish": {"top": 0.6058, "base": "tab"}, "finish-memo": {"top": 0.6058, "base": "tab"}, "pick-hall": {"top": 0.8024, "base": "hall"}, "upload": {"top": 0.4356, "base": "hall"}, "memo-empty": {"top": 0.6058, "base": "tab"}, "name-empty": {"top": 0.5914, "base": "tab"}}, "typing": {"memo": {"layer": "sheet", "empty": "memo-empty", "done": "finish-memo", "chars": 8, "lines": [{"x": 0.3486, "y": 0.8558, "w": 0.3528, "h": 0.0168}]}, "name": {"layer": "sheet", "empty": "name-empty", "done": "start", "chars": 6, "lines": [{"x": 0.2972, "y": 0.7384, "w": 0.1674, "h": 0.0168}]}}, "tall": {}, "dialogs": {}, "size": [720, 1460]}};
   // 누를 곳: 캡처를 폭 923으로 줄여 본 자리(왼쪽 위·오른쪽 아래)를 화면 비율로 (원본 1440×3120, 위 140줄 잘라 냄)
   const D = (x0, y0, x1, y1, o) => Object.assign({ x: x0 / 923, y: (y0 * 1.5601 - 140) / 2920, w: (x1 - x0) / 923, h: ((y1 - y0) * 1.5601) / 2920, r: 0.02 }, o || {});
 
@@ -507,6 +517,34 @@ body { margin: 0; }
         { at: { base: 'home' }, cap: '기록이 그대로 돌아왔어요', sub: '사진·트로피도 함께 돌아와요', act: [['ring', 'homeCards'], ['wait', 1200]] },
         { more: true, at: { base: 'picker' }, cap: '폰에 둔 백업 파일로도 돼요', sub: '[파일로 내보내기]로 둔 곳에서 골라요', act: [['ring', 'phoneFile'], ['wait', 600], ['tap', 'phoneFile']] },
         { more: true, at: { base: 'settings' }, cap: '드라이브도 다시 연결해요', sub: '새 폰에서도 [구글 드라이브]를 눌러요', act: [['tap', 'driveSet']] },
+      ],
+    },
+    export: {
+      box: {
+        settingsTab: D(770, 1845, 890, 1950, { r: .03 }),
+        exportRow: D(45, 1213, 878, 1335, { r: .01 }),
+        gradeRows: D(25, 1340, 898, 1770, { r: .02 }),
+        grade2: D(25, 1520, 898, 1640, { r: .01 }),
+        saveRow: D(20, 1730, 903, 1845, { r: .01 }),
+        toast: D(45, 1697, 878, 1805, { r: .03 }),
+        tabs: D(150, 1832, 742, 1918, { r: .02 }),
+        allExcel: D(25, 1788, 898, 1955, { r: .01 }),
+        checkBox: D(36, 1238, 430, 1300, { r: .015 }),
+        grade1: D(25, 1395, 898, 1515, { r: .01 }),
+      },
+      // 만드는 중 창의 도는 동그라미 (화면 비율. 캡처의 멈춘 동그라미는 지움, chapters/export.json)
+      spinners: { making: { x: .5, y: .4274, d: .0803 } },
+      steps: [
+        { at: { base: 'home' }, cap: '아래 [설정]을 눌러요', sub: '꺼내기는 설정에 있어요', act: [['tap', 'settingsTab']] },
+        { at: { base: 'settings' }, cap: '[기록 꺼내기]를 눌러요', sub: '엑셀과 사진·문서를 앱 밖으로 꺼내요', act: [['tap', 'exportRow']] },
+        { at: { base: 'settings', sheet: 'sheet' }, cap: '꺼낼 학년을 골라요', sub: '학년마다 엑셀과 사진·문서가 압축 파일 하나로 나와요', act: [['spot', 'gradeRows'], ['wait', 500], ['tap', 'grade2'], ['unspot']] },
+        { at: { base: 'settings', sheet: 'where' }, cap: '[폰에 저장]을 눌러요', sub: '폰의 저장 창이 열리면 다운로드 폴더처럼 둘 곳을 골라요', act: [['tap', 'saveRow']] },
+        { at: { base: 'settings', dialog: 'making' }, cap: '기록을 모아 파일을 만들어요', sub: '사진이 많으면 시간이 걸려요', act: [['wait', 1800]] },
+        { at: { base: 'saved' }, cap: '저장했어요', sub: '압축을 풀면 엑셀과 영역·활동 이름 폴더가 나와요', act: [['ring', 'toast'], ['wait', 1200]] },
+        { at: { base: 'excel', via: 'up' }, cap: '엑셀을 열면 이렇게 보여요', sub: '영역마다 시트 하나, 활동마다 한 줄이에요', act: [['wait', 500], ['ring', 'tabs'], ['wait', 1200]] },
+        { more: true, at: { base: 'settings', sheet: 'sheet' }, cap: '글만 엑셀 하나로도 꺼내요', sub: '[전체 기록 엑셀]은 모든 학년이 한 파일에, 사진은 빠져요', act: [['ring', 'allExcel'], ['wait', 1200]] },
+        { more: true, at: { base: 'settings', sheet: 'sheet' }, cap: '생기부에 들어간 활동만 고를 수도 있어요', sub: '맨 위 체크 칸을 켜요', act: [['tap', 'checkBox']] },
+        { more: true, at: { base: 'settings', sheet: 'sheet-check', grow: true }, cap: '체크하면 수가 바뀌어요', sub: '생기부에 들어갔다고 표시한 활동만 꺼내요', act: [['ring', 'grade1'], ['wait', 1200]] },
       ],
     },
   };
